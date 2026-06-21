@@ -1,5 +1,7 @@
 # Sprout Track — User Manual
 
+🌐 Languages: **English** · [Español](es/README.md) · [Français](fr/README.md)
+
 Welcome! Sprout Track helps you and everyone who cares for your little one keep
 track of sleep, feeding, diapers, growth, and all the little moments in between.
 
