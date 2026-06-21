@@ -73,7 +73,7 @@ Conventions:
 
 - Create “dumb” UI components that are highly configurable through props
 - Implement container/presentational pattern to separate data fetching from UI rendering
-- Keep components small and focused (under 200 lines of code)
+- Keep components small and focused (aim for under ~200 lines) — this is a goal, not strictly enforced; some existing layout/container components are larger
 - Use composition over inheritance when building complex components
 - Include props for error and loading states in all data-dependent components
 - Design with accessibility in mind from the start (proper ARIA attributes)
@@ -119,23 +119,17 @@ Conventions:
 
 ## Navigation
 
-- Use Next.js’s file-system based routing
-- Define strongly typed route parameters with TypeScript interfaces
-- Create navigation utilities that consolidate route definitions
-- Implement type-safe navigation helpers
-- Create guards for protected routes in middleware
-- Make routes accessible and SEO-friendly
+- Use Next.js’s file-system based routing under `app/`. Most app pages live under the family-scoped route group `app/(app)/[slug]/` (e.g. `/{slug}/log-entry`, `/{slug}/calendar`).
+- Navigate with `next/navigation`’s `useRouter`. App paths must be prefixed with the current family slug — use the `withFamilySlug(path)` helper in `client-layout.tsx` rather than hardcoding slugs.
+- **There is no `middleware.ts`.** Route protection is enforced in two places: client-side auth checks in `app/(app)/[slug]/client-layout.tsx` (token/idle validation that redirects to the family login), and server-side via the auth wrappers on every API route (see Authentication section).
 
 ## API and Data Fetching
 
-- Create a type-safe fetch wrapper with proper error handling
-- Implement domain-specific API services that use the core API layer
-- Use `useEffect` with fetch for data loading — React Query is not used
-- Implement error handling that provides clear user feedback
-- Define optimistic updates for better UX where appropriate
-- Structure API responses with consistent types
-- Offline capabilities are supported through the PWA service worker
-- All API responses follow a consistent format: `{ success: boolean, data?: T, error?: string }`
+- Data is fetched directly with the native `fetch` inside `useEffect` — there is **no** shared fetch wrapper and **no** `src/services` layer. React Query is not used.
+- Attach the JWT on authenticated requests via the `Authorization: Bearer <token>` header, reading the token from `localStorage` (`authToken`).
+- Handle loading and error states explicitly in each component; surface clear user feedback.
+- All API responses follow a consistent format: `{ success: boolean, data?: T, error?: string }`.
+- Offline capabilities are supported through the PWA service worker.
 
 ## Authentication and Authorization
 
@@ -150,6 +144,7 @@ Conventions:
 
 - `withAuth(handler)` — any authenticated user can access
 - `withAdminAuth(handler)` — admin users, system caretakers (loginId ‘00’), and system administrators only
+- `withSysAdminAuth(handler)` — system administrators (`isSysAdmin: true`) only
 - `withAuthContext(handler)` — provides `authContext` object with `caretakerId`, `caretakerType`, `caretakerRole`, `familyId`, `familySlug`
 
 ```typescript
@@ -203,7 +198,7 @@ export const GET = withAuthContext(handler);
 
 ### Translation files
 
-- Per-language JSON files in `src/localization/translations/`: `en.json`, `es.json`, `fr.json`, `de.json`, `it.json`
+- Per-language JSON files in `src/localization/translations/` (9 languages): `en.json`, `es.json`, `fr.json`, `de.json`, `it.json`, `nl.json`, `pt-br.json`, `pt-pt.json`, `ro.json`
 - Flat key-value structure — keys are the English text, values are the translated string
 - Supported languages are configured in `src/localization/supported-languages.json`
 - English (`en.json`) is the fallback — always add keys here first
@@ -229,11 +224,9 @@ export const GET = withAuthContext(handler);
 
 ## Testing
 
-- Write tests for all components, custom hooks, and services
-- Test error and loading states
-- Verify accessibility features
-- Test responsive layouts
-- Implement integration tests for complex features
+- **There is currently no automated test suite** — no test framework (Jest/Vitest/etc.), no `test` script, and no `*.test`/`*.spec` files in the repo.
+- Until one is introduced, verify changes manually by running the app (`npm run dev`) and exercising the affected flows, including error/loading states, accessibility, and responsive layouts.
+- If you add a test framework, document the chosen tooling and commands here.
 
 ## Code Modification Guidelines
 
