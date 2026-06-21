@@ -35,11 +35,20 @@ save (nothing is recorded until you save):
 - **Log feeding — Breast** (try typing `ali pecho`, `breast`, or `teta`)
 - **Log feeding — Bottle** (`bottle`, `biberón`)
 - **Log feeding — Solids** (`solids`, `sólidos`)
-- **Log sleep** (`sleep`, `dormir`)
 - **Log diaper** (`diaper`, `pañal`)
+- **Log sleep** (`sleep`, `dormir`)
+- **Log pumping** (`pump`, `extracción`, `sacaleche`)
+- **Log medicine** (`medicine`, `medicina`, `medicamento`)
+- **Log measurement** (`measurement`, `medición`, `peso`, `talla`)
+- **Log bath** (`bath`, `baño`)
+- **Log note** (`note`, `nota`)
+- **Log activity** (`activity`, `actividad`, `juego`)
+- **Log milestone** (`milestone`, `hito`)
+- **Log vaccine** (`vaccine`, `vacuna`)
 
-These open on the currently selected baby. If you track more than one baby,
-select the right baby first.
+The list is ordered with the most-used actions first. These open on the
+currently selected baby. If you track more than one baby, select the right baby
+first.
 
 **Navigation**
 

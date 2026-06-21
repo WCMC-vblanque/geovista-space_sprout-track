@@ -35,6 +35,14 @@ import {
   Utensils,
   Droplets,
   BedDouble,
+  Milk,
+  Pill,
+  Ruler,
+  StickyNote,
+  Bath,
+  Blocks,
+  Star,
+  Syringe,
 } from 'lucide-react';
 import { Inter as FontSans } from 'next/font/google';
 import { cn } from '@/src/lib/utils';
@@ -797,12 +805,21 @@ function AppContent({ children }: { children: React.ReactNode }) {
     const langGroup = t('Language');
 
     const items: CommandItem[] = [
-      // Quick Log — opens the matching log form pre-selected to the right type
+      // Quick Log — opens the matching log form pre-selected to the right type.
+      // Ordered by how often caregivers use each action (most frequent first).
       { id: 'log-feed-breast', label: t('Log feeding — Breast'), keywords: 'feed breast pecho teta lactancia alimentar alimentacion ali pecho allaitement sein', group: quickLog, icon: Utensils, action: go('/log-entry?log=feed-breast') },
       { id: 'log-feed-bottle', label: t('Log feeding — Bottle'), keywords: 'feed bottle biberon mamadera formula alimentar ali bibe', group: quickLog, icon: Utensils, action: go('/log-entry?log=feed-bottle') },
       { id: 'log-feed-solids', label: t('Log feeding — Solids'), keywords: 'feed solids solidos comida papilla ali sol nourriture solide', group: quickLog, icon: Utensils, action: go('/log-entry?log=feed-solids') },
-      { id: 'log-sleep', label: t('Log sleep'), keywords: 'sleep dormir sueño siesta nap acostar sommeil dodo', group: quickLog, icon: BedDouble, action: go('/log-entry?log=sleep') },
       { id: 'log-diaper', label: t('Log diaper'), keywords: 'diaper pañal cambio caca pis couche', group: quickLog, icon: Droplets, action: go('/log-entry?log=diaper') },
+      { id: 'log-sleep', label: t('Log sleep'), keywords: 'sleep dormir sueño siesta nap acostar sommeil dodo', group: quickLog, icon: BedDouble, action: go('/log-entry?log=sleep') },
+      { id: 'log-pump', label: t('Log pumping'), keywords: 'pump pumping extraccion sacaleche extractor bomba leche tire-lait', group: quickLog, icon: Milk, action: go('/log-entry?log=pump') },
+      { id: 'log-medicine', label: t('Log medicine'), keywords: 'medicine medicina medicamento jarabe dose dosis medicament remedio', group: quickLog, icon: Pill, action: go('/log-entry?log=medicine') },
+      { id: 'log-measurement', label: t('Log measurement'), keywords: 'measurement medicion peso talla altura weight height growth mesure mensuracion', group: quickLog, icon: Ruler, action: go('/log-entry?log=measurement') },
+      { id: 'log-bath', label: t('Log bath'), keywords: 'bath baño bano banar bain ducha shower', group: quickLog, icon: Bath, action: go('/log-entry?log=bath') },
+      { id: 'log-note', label: t('Log note'), keywords: 'note nota apunte comentario remarque comment', group: quickLog, icon: StickyNote, action: go('/log-entry?log=note') },
+      { id: 'log-activity', label: t('Log activity'), keywords: 'activity actividad juego play tummy time jugar activite', group: quickLog, icon: Blocks, action: go('/log-entry?log=activity') },
+      { id: 'log-milestone', label: t('Log milestone'), keywords: 'milestone hito logro etapa desarrollo jalon etape', group: quickLog, icon: Star, action: go('/log-entry?log=milestone') },
+      { id: 'log-vaccine', label: t('Log vaccine'), keywords: 'vaccine vacuna inmunizacion vacunacion vaccin immunization shot', group: quickLog, icon: Syringe, action: go('/log-entry?log=vaccine') },
       // Navigation
       { id: 'log-entry', label: t('Log Entry'), keywords: 'log entry registro entrada saisie diaper feed sleep pañal toma sueño', group: nav, icon: NotebookPen, action: go('/log-entry') },
       { id: 'full-log', label: t('Full Log'), keywords: 'full log history historial journal complet activity', group: nav, icon: ScrollText, action: go('/full-log') },

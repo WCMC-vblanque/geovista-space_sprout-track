@@ -70,6 +70,14 @@ function HomeContent(): React.ReactElement {
       case 'feed-breast': setFeedInitialType('BREAST'); setShowFeedModal(true); break;
       case 'feed-bottle': setFeedInitialType('BOTTLE'); setShowFeedModal(true); break;
       case 'feed-solids': setFeedInitialType('SOLIDS'); setShowFeedModal(true); break;
+      case 'pump': setShowPumpModal(true); break;
+      case 'medicine': setShowMedicineModal(true); break;
+      case 'measurement': setShowMeasurementModal(true); break;
+      case 'bath': setShowBathModal(true); break;
+      case 'note': setShowNoteModal(true); break;
+      case 'activity': setShowActivityModal(true); break;
+      case 'milestone': setShowMilestoneModal(true); break;
+      case 'vaccine': setShowVaccineModal(true); break;
     }
 
     // Clear the param so a refresh or back-navigation doesn't reopen the form
