@@ -228,6 +228,15 @@ export const GET = withAuthContext(handler);
 - Until one is introduced, verify changes manually by running the app (`npm run dev`) and exercising the affected flows, including error/loading states, accessibility, and responsive layouts.
 - If you add a test framework, document the chosen tooling and commands here.
 
+## Local Development & Verifying Changes
+
+**Always confirm that code changes are actually reflected in the running app before reporting them as done.** This app is a PWA with aggressive caching, so stale builds/caches are a common source of "it doesn't work" confusion. To guarantee changes show up:
+
+- **This is a PWA with a service worker.** A normal browser refresh can serve a stale, cached bundle. After changing client code, do a hard reload (DevTools → right-click the reload button → *Empty Cache and Hard Reload*). If it persists, DevTools → *Application* → unregister the service worker and *Clear site data*, then reload.
+- **If changes don't appear in `npm run dev`** — especially after switching git branches, rebasing, or a `git reset` — stop the dev server, delete the Next.js cache, and restart: `rm -rf .next && npm run dev`. Turbopack can hold a stale state across branch switches.
+- **Verify, don't assume.** After a change, hit the affected route (e.g. `curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/<path>`) and check the dev-server log for compile errors before concluding it works.
+- The command palette / search button and most app chrome only mount inside the family-scoped app layout (`/{slug}/...`), not on the root or login routes — test features on the correct route.
+
 ## Documentation
 
 - **Every new user-facing feature must be documented in the user manual** at `documentation/User-Documentation/`. Add a new task-oriented guide (or update an existing one) describing how an end-user uses the feature, and link it from `documentation/User-Documentation/README.md`.
