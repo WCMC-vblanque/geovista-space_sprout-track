@@ -32,6 +32,9 @@ import {
   SunMoon,
   Languages,
   LogOut,
+  Utensils,
+  Droplets,
+  BedDouble,
 } from 'lucide-react';
 import { Inter as FontSans } from 'next/font/google';
 import { cn } from '@/src/lib/utils';
@@ -788,11 +791,18 @@ function AppContent({ children }: { children: React.ReactNode }) {
   // Commands available in the command palette ("superbuscador").
   const commands = useMemo<CommandItem[]>(() => {
     const go = (path: string) => () => router.push(`/${familySlug}${path}`);
+    const quickLog = t('Quick Log');
     const nav = t('Navigation');
     const actions = t('Actions');
     const langGroup = t('Language');
 
     const items: CommandItem[] = [
+      // Quick Log — opens the matching log form pre-selected to the right type
+      { id: 'log-feed-breast', label: t('Log feeding — Breast'), keywords: 'feed breast pecho teta lactancia alimentar alimentacion ali pecho allaitement sein', group: quickLog, icon: Utensils, action: go('/log-entry?log=feed-breast') },
+      { id: 'log-feed-bottle', label: t('Log feeding — Bottle'), keywords: 'feed bottle biberon mamadera formula alimentar ali bibe', group: quickLog, icon: Utensils, action: go('/log-entry?log=feed-bottle') },
+      { id: 'log-feed-solids', label: t('Log feeding — Solids'), keywords: 'feed solids solidos comida papilla ali sol nourriture solide', group: quickLog, icon: Utensils, action: go('/log-entry?log=feed-solids') },
+      { id: 'log-sleep', label: t('Log sleep'), keywords: 'sleep dormir sueño siesta nap acostar sommeil dodo', group: quickLog, icon: BedDouble, action: go('/log-entry?log=sleep') },
+      { id: 'log-diaper', label: t('Log diaper'), keywords: 'diaper pañal cambio caca pis couche', group: quickLog, icon: Droplets, action: go('/log-entry?log=diaper') },
       // Navigation
       { id: 'log-entry', label: t('Log Entry'), keywords: 'log entry registro entrada saisie diaper feed sleep pañal toma sueño', group: nav, icon: NotebookPen, action: go('/log-entry') },
       { id: 'full-log', label: t('Full Log'), keywords: 'full log history historial journal complet activity', group: nav, icon: ScrollText, action: go('/full-log') },

@@ -28,6 +28,19 @@ your app is set to English, Spanish, French, or another language.
 
 ## What you can do from Quick Search
 
+**Quick Log** — record an activity in a couple of keystrokes. The matching form
+opens already set to the right type, so you just confirm the time/amount and
+save (nothing is recorded until you save):
+
+- **Log feeding — Breast** (try typing `ali pecho`, `breast`, or `teta`)
+- **Log feeding — Bottle** (`bottle`, `biberón`)
+- **Log feeding — Solids** (`solids`, `sólidos`)
+- **Log sleep** (`sleep`, `dormir`)
+- **Log diaper** (`diaper`, `pañal`)
+
+These open on the currently selected baby. If you track more than one baby,
+select the right baby first.
+
 **Navigation**
 
 - **Log Entry** — the daily dashboard where you record activities

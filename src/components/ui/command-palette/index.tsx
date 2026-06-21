@@ -14,7 +14,9 @@ const normalize = (value: string) =>
   value
     .toLowerCase()
     .normalize('NFD')
-    .replace(/\p{Diacritic}/gu, '');
+    // Strip combining diacritical marks (U+0300–U+036F). Using the explicit
+    // unicode range avoids the `u` regex flag, so it type-checks on any target.
+    .replace(/[\u0300-\u036f]/g, '');
 
 /**
  * CommandPalette ("superbuscador")
