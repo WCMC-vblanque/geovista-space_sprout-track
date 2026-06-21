@@ -2,25 +2,69 @@
 
 These rules define the development patterns, conventions, and architecture for Sprout Track. This document serves as the primary context for AI-assisted development sessions.
 
+> **Project:** Sprout Track — self-hosted baby activity tracker (diapers, feeding, sleep, milestones, medicine, etc.) for families and caregivers.
+> **Package version:** `1.3.4` (package name `baby-tracker`) · **Node:** 22+ · **Next.js:** 16 · **React:** 19
+
 ## Tech Stack
 
 - Next.js with App Router: Core framework for routing, server components, and API routes.
-- TypeScript: For type-safe code.
+- TypeScript (strict mode): For type-safe code.
 - Prisma ORM with support for both PostgreSQL and SQLite for data persistence. All queries and schema must be compatible with both database systems.
-- TailwindCSS: For utility-first styling (no CSS Modules, no Styled Components).
+- TailwindCSS v4 + Class Variance Authority (CVA): For utility-first styling (no CSS Modules, no Styled Components).
 - React Hooks (useState, useEffect, useContext): Used for all client-side state management, data fetching, and form handling.
-- PWA architecture with offline support, push notifications (VAPID), and Wake Lock API.
+- PWA architecture with offline support, push notifications (VAPID/web-push), and Wake Lock API.
+- Charts via Recharts; PDF export via jsPDF + html2canvas-pro; spreadsheet export via exceljs.
+- Auth via JWT (`jsonwebtoken`); email via Nodemailer + SendGrid; Stripe for billing; Docker for deployment.
+- **Note on React Query:** `@tanstack/react-query` is listed in `package.json` but is **not used** in the codebase — data fetching is done with `useEffect` + `fetch`. Do not introduce it.
 
 ## Project Structure
 
-- Follow the `/src` directory structure with dedicated folders for components, hooks, services, utils, constants, context, types, and styles
+The actual top-level layout (verified against the repo — note there is **no** standalone `src/services`, `src/types`, or `src/styles` directory; types are co-located with components):
+
+```
+sprout-track/
+├── app/                         # Next.js App Router — pages & API routes
+│   ├── (app)/ (auth)/ (nursery)/ (setup-resume)/   # route groups
+│   ├── account/ family-manager/ family-select/ home/ setup/
+│   ├── context/                 # baby, deployment, timezone contexts (app-level)
+│   ├── api/                     # API endpoints (see Auth section for patterns)
+│   │   ├── auth/                # login, logout, token handling
+│   │   ├── utils/               # auth.ts, ip-lockout.ts, db helpers
+│   │   ├── sleep-log/ feed-log/ diaper-log/ medicine-log/ ...  # per-activity CRUD
+│   │   ├── notifications/ localization/ settings/ timeline/ ...
+│   │   └── types.ts
+│   ├── layout.tsx  page.tsx  template.tsx  metadata.ts  globals.css
+├── src/
+│   ├── components/
+│   │   ├── ui/                  # base primitives (Button, Input, Select, ...)
+│   │   ├── forms/               # form components built on ui/
+│   │   ├── modals/              # modal components
+│   │   ├── features/            # shared feature pieces
+│   │   ├── Calendar/ Timeline/ Reports/ DailyStats/ BabySelector/ SetupWizard/  # feature folders
+│   │   ├── account-manager/ familymanager/                                       # domain management
+│   │   └── ... (ActiveFeedBanner, BabyQuickInfo, BackupRestore, LoginSecurity, ...)
+│   ├── context/                 # family, localization, theme contexts (src-level)
+│   ├── hooks/                   # custom React hooks
+│   ├── lib/                     # email, notifications, file-encryption, utils.ts
+│   ├── constants/               # shared constants
+│   ├── utils/                   # dateFormat, unit-conversion, ...
+│   └── localization/
+│       └── translations/        # en, es, fr, de, it, nl, pt-br, pt-pt, ro (.json)
+├── prisma/                      # schema.prisma, log-schema.prisma, seed.ts, db.ts
+├── scripts/                     # setup, migrations, demo data, translations, vapid, ...
+├── st-guardian/                 # security hardening module (own package)
+├── documentation/  public/  Dockerfile  docker-compose.yml  CLAUDE.md
+```
+
+Conventions:
+
 - Component organization under `src/components/`:
-  - `ui/` — base UI primitives (button, input, etc.), each with their own folder containing `index.tsx`, `styles.ts`, `types.ts`, `.css`, and `README.md`
+  - `ui/` — base UI primitives (button, input, etc.), each with their own folder containing `index.tsx`, `[component].styles.ts`, `[component].types.ts`, `[component].css`, and `README.md`
   - `forms/` — form components built on top of `ui/` form page components
   - `modals/` — modal components
-  - Feature components live in their own named folders at the component root (e.g., `Calendar/`, `Timeline/`, `Reports/`, `DailyStats/`, `BabySelector/`, `SetupWizard/`) — there is no `features/` directory
+  - Feature components live in their own named folders at the component root (e.g., `Calendar/`, `Timeline/`, `Reports/`, `DailyStats/`, `BabySelector/`, `SetupWizard/`)
   - Domain management components: `account-manager/`, `familymanager/`
-- Keep component files, styles, types, and documentation together in the same folder
+- Keep component files, styles, types, and documentation together in the same folder (types are co-located, not in a global `types/` directory)
 - Include README.md files for components documenting props, usage, and implementation details
 - Maintain a consistent naming convention across all files and components
 - Backend API layers are fully separated from the Next.js web layer
@@ -38,7 +82,7 @@ These rules define the development patterns, conventions, and architecture for S
 ## TypeScript Implementation
 
 - Enable strict TypeScript mode in `tsconfig.json`
-- Create shared types in the `/types` directory for domain entities
+- Shared API types live in `app/api/types.ts`; component-specific types are co-located in `[component].types.ts` (there is no global `/types` directory)
 - Use discriminated unions for different event types (e.g., feeding vs. diaper events)
 - Implement type guards for safe type narrowing
 - Define constants with type safety using `as const` assertions
