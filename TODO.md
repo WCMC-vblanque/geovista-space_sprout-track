@@ -44,20 +44,54 @@ las necesidades del bebé.
       *"Tu bebé debería dormir su próxima siesta a las XX:XX (en 2 h 15 min)"*,
       basado en su **edad** y su **último registro de sueño**.
 
-### 2.2. Recomendaciones inteligentes según el desarrollo
-- [ ] Crear una pestaña que, según la **edad actual** del bebé (calculada desde su
-      fecha de nacimiento), sugiera **actividades de estimulación temprana**.
-- [ ] Recordar qué **vacunas** o **hitos del desarrollo (milestones)** corresponden
-      a ese mes específico.
+### 2.2. Recomendaciones de estimulación y salud según la edad
+- [ ] Crear una sección/pestaña que, según la **edad actual** del bebé (calculada
+      desde su fecha de nacimiento), muestre:
+  - **Actividades de estimulación temprana** apropiadas para esa semana/mes:
+    juguetes recomendados, canciones, juegos sensoriales.
+  - **Recomendaciones de salud y desarrollo** según la edad, tomando como
+    referencia inicial el calendario **NHS** (Reino Unido); diseñar el sistema
+    para poder parametrizar por país en el futuro (calendario pediátrico local).
+  - **Vacunas** e **hitos del desarrollo (milestones)** correspondientes a ese
+    mes específico.
 
 ---
 
-## 🌐 Nivel 3 — Localización e Idioma (comodidad indispensable)
+## 📅 Nivel 3 — Fechas Clave & Trámites (plazos reales)
+
+Recordatorios de obligaciones legales y administrativas con **plazos** — se
+apoyan en el motor de notificaciones del Nivel 1.2.
+
+### 3.1. Registro nacional de nacimiento
+- [ ] Mostrar un recordatorio prominente (y notificación push) para **inscribir al
+      bebé en el registro civil** nacional, con el **plazo legal** según el país de
+      nacimiento.
+  - Ejemplo UK: plazo de **42 días** desde el nacimiento.
+  - Diseñar para ser parametrizable por país.
+
+### 3.2. Registro consular / embajada
+- [ ] Recordatorio para **registrar al bebé en la embajada o consulado** del país
+      de nacionalidad de los padres (relevante para expatriados).
+  - Incluir enlace a la página oficial del consulado (configurable por país).
+  - Sin plazo fijo universal → mostrar como tarea pendiente desde el nacimiento.
+
+### 3.3. Calendario oficial de salud (NHS u organismo local)
+- [ ] Importar/codificar el **calendario de controles y visitas pediátricas** del
+      NHS (UK) como punto de partida: revisiones a las 6–8 semanas, 1 año,
+      2–2.5 años, etc.
+- [ ] Mostrar la **próxima cita recomendada** en el dashboard y enviar
+      notificación cuando se acerque.
+- [ ] Diseñar la estructura de datos para poder añadir calendarios de otros países
+      sin cambiar la lógica central.
+
+---
+
+## 🌐 Nivel 4 — Localización e Idioma (comodidad indispensable)
 
 La v1.0 ya tiene traducciones básicas, pero a veces no se adaptan al vocabulario
 de cada país.
 
-### 3.1. Localización al Español Latino / Neutro
+### 4.1. Localización al Español Latino / Neutro
 - [ ] Revisar los archivos de traducción (`src/localization/translations/es.json`)
       para cambiar modismos de España por términos más naturales:
       - "hacer caquita" → "pañal sucio" / "evacuación"
@@ -67,11 +101,19 @@ de cada país.
 
 ---
 
-## 🎨 Nivel 4 — Usabilidad y UI/UX (comodidad del día a día)
+## 🎨 Nivel 5 — Usabilidad y UI/UX (comodidad del día a día)
 
 Mejorar la experiencia visual, sobre todo para las **desveladas nocturnas**.
 
-### 4.1. Widget de Entrada Rápida de 1 clic (Quick Logs)
+### 5.1. Consejo del día (con énfasis ecológico)
+- [ ] Mostrar **un consejo al día** en el dashboard (o como notificación matutina).
+- [ ] Mezcla de categorías: bienestar, sueño, seguridad, estimulación — pero con
+      **al menos 2 consejos por semana de crianza ecológica/sostenible** (pañales
+      de tela, cosmética natural, reducir plásticos, etc.).
+- [ ] Implementar como colección de consejos en la base de datos, categorizados y
+      con peso de frecuencia (los "verdes" se muestran ≥ 2× por semana).
+
+### 5.2. Widget de Entrada Rápida de 1 clic (Quick Logs)
 - [ ] Diseñar una **barra flotante persistente** en la parte inferior de la
       pantalla móvil.
 - [ ] Permitir registrar con **un solo toque** un "pañal mojado estándar" o una
@@ -80,18 +122,18 @@ Mejorar la experiencia visual, sobre todo para las **desveladas nocturnas**.
 > Nota: ya existe el **Quick Search (Ctrl/Cmd + K)** con acciones de "Quick Log";
 > este punto es la versión **táctil de 1 toque** para móvil.
 
-### 4.2. Perfeccionamiento del Modo Noche en "Nursery Mode"
+### 5.3. Perfeccionamiento del Modo Noche en "Nursery Mode"
 - [ ] Hacer **personalizable** el color de la luz nocturna en pantalla (luz de
       noche integrada): un tono **rojo cálido o ámbar** que no interfiera con la
       melatonina del bebé.
 
 ---
 
-## ⚙️ Nivel 5 — Automatización y Domótica (para techies — menos crítico)
+## ⚙️ Nivel 6 — Automatización y Domótica (para techies — menos crítico)
 
 Hacer que tu casa reaccione a tu bebé.
 
-### 5.1. Extensión de Webhooks para Home Assistant
+### 6.1. Extensión de Webhooks para Home Assistant
 - [ ] Configurar **eventos específicos** sobre los webhooks existentes de Sprout Track.
 - [ ] Ejemplo: cuando el cronómetro de **"Siesta"** comience → enviar un webhook
       para **apagar las luces inteligentes** del cuarto y **poner ruido blanco**
@@ -115,6 +157,8 @@ por la prioridad #1:
 
 ### Orden recomendado de ataque
 1. **Nivel 1.1** → motor de reglas (la base de todo lo proactivo).
-2. **Nivel 1.2** → notificaciones (para que las alertas lleguen al celular).
+2. **Nivel 1.2** → notificaciones (las alertas + recordatorios de trámites del Nivel 3 las necesitan).
 3. **Nivel 2.1** → ventanas de sueño.
-4. Resto de niveles según necesidad.
+4. **Nivel 2.2** → estimulación por edad + calendario NHS.
+5. **Nivel 3** → fechas clave y trámites (registro civil, consular, controles pediátricos).
+6. Resto de niveles según necesidad.
