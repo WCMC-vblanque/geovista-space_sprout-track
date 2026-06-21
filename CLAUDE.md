@@ -244,8 +244,10 @@ This project is developed on Windows but the dev server runs in **WSL** (the Win
 - **Use Node 20 via nvm.** WSL's system Node is 18, which Next.js 16 rejects. Load nvm before `npm run dev`: `source ~/.nvm/nvm.sh && nvm use 20`.
 - **Do NOT detach with `nohup ... &`.** The background process is tied to the WSL session; when that session closes the server is killed. Keep the WSL process attached as a long-lived background task instead.
 - **Load `.env` first.** Prisma/runtime needs it: `set -a && source .env && set +a`.
-- Full one-liner: `cd <project> && source ~/.nvm/nvm.sh && nvm use 20 && set -a && source .env && set +a && exec npm run dev`
+- **Enable file polling.** Project files live on the Windows mount (`/mnt/c`), and WSL2 does NOT receive inotify events for them — without polling, HMR never sees edits made from Windows and the browser keeps serving the old bundle (looks like a cache bug but isn't). Export `WATCHPACK_POLLING=true CHOKIDAR_USEPOLLING=true` before `npm run dev`.
+- Full one-liner: `cd <project> && source ~/.nvm/nvm.sh && nvm use 20 && export WATCHPACK_POLLING=true CHOKIDAR_USEPOLLING=true && set -a && source .env && set +a && exec npm run dev`
 - After (re)starting, confirm it's up before reporting: `curl -s -o /dev/null -w "%{http_code}" http://localhost:3000` should return `200`.
+- **If a change still doesn't show:** first check it actually compiled — `grep -rlq "<new string>" .next/`. If missing, it's the watcher (restart with polling); if present but the browser shows old code, it's the PWA service worker (unregister it in DevTools — a plain hard reload won't bypass it).
 
 ## Documentation
 
