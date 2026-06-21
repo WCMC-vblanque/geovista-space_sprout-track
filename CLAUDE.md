@@ -228,6 +228,12 @@ export const GET = withAuthContext(handler);
 - Until one is introduced, verify changes manually by running the app (`npm run dev`) and exercising the affected flows, including error/loading states, accessibility, and responsive layouts.
 - If you add a test framework, document the chosen tooling and commands here.
 
+## Documentation
+
+- **Every new user-facing feature must be documented in the user manual** at `documentation/User-Documentation/`. Add a new task-oriented guide (or update an existing one) describing how an end-user uses the feature, and link it from `documentation/User-Documentation/README.md`.
+- Keep user-manual content simple, concise, and aimed at non-technical caregivers — not implementation details.
+- Implementation notes, plans, and mockups belong in `documentation/Implementation/`; architectural docs in `documentation/Architecture-Documentation/`; self-hosting/admin docs in `documentation/Admin-Documentation/`.
+
 ## Code Modification Guidelines
 
 - Challenge yourself to write as few lines of code as possible
