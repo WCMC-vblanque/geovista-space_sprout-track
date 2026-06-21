@@ -1,0 +1,49 @@
+/* Dark mode overrides for the CommandPalette component */
+html.dark .command-palette-overlay {
+  background-color: rgba(0, 0, 0, 0.6) !important;
+}
+
+html.dark .command-palette-content {
+  background-color: rgb(31, 41, 55) !important; /* gray-800 */
+  border-color: #374151 !important; /* gray-700 */
+}
+
+html.dark .command-palette-input-wrapper {
+  border-color: #374151 !important; /* gray-700 */
+}
+
+html.dark .command-palette-input {
+  color: #e5e7eb !important; /* gray-200 */
+}
+
+html.dark .command-palette-input::placeholder {
+  color: #9ca3af !important; /* gray-400 */
+}
+
+html.dark .command-palette-group-label {
+  color: #6b7280 !important; /* gray-500 */
+}
+
+html.dark .command-palette-item {
+  color: #d1d5db !important; /* gray-300 */
+}
+
+html.dark .command-palette-item-active {
+  background-color: rgba(13, 148, 136, 0.15) !important; /* teal-600 @ 15% */
+  color: #5eead4 !important; /* teal-300 */
+}
+
+html.dark .command-palette-empty {
+  color: #6b7280 !important; /* gray-500 */
+}
+
+html.dark .command-palette-hint {
+  border-color: #374151 !important; /* gray-700 */
+  color: #6b7280 !important; /* gray-500 */
+}
+
+html.dark .command-palette-kbd {
+  border-color: #374151 !important; /* gray-700 */
+  background-color: #111827 !important; /* gray-900 */
+  color: #9ca3af !important; /* gray-400 */
+}
