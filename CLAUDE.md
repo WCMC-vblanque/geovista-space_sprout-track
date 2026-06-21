@@ -237,6 +237,16 @@ export const GET = withAuthContext(handler);
 - **Verify, don't assume.** After a change, hit the affected route (e.g. `curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/<path>`) and check the dev-server log for compile errors before concluding it works.
 - The command palette / search button and most app chrome only mount inside the family-scoped app layout (`/{slug}/...`), not on the root or login routes — test features on the correct route.
 
+### Running the dev server (Windows + WSL)
+
+This project is developed on Windows but the dev server runs in **WSL** (the Windows Node is too old). Get the startup right the first time to avoid the server silently dying or running on the wrong Node:
+
+- **Use Node 20 via nvm.** WSL's system Node is 18, which Next.js 16 rejects. Load nvm before `npm run dev`: `source ~/.nvm/nvm.sh && nvm use 20`.
+- **Do NOT detach with `nohup ... &`.** The background process is tied to the WSL session; when that session closes the server is killed. Keep the WSL process attached as a long-lived background task instead.
+- **Load `.env` first.** Prisma/runtime needs it: `set -a && source .env && set +a`.
+- Full one-liner: `cd <project> && source ~/.nvm/nvm.sh && nvm use 20 && set -a && source .env && set +a && exec npm run dev`
+- After (re)starting, confirm it's up before reporting: `curl -s -o /dev/null -w "%{http_code}" http://localhost:3000` should return `200`.
+
 ## Documentation
 
 - **Every new user-facing feature must be documented in the user manual** at `documentation/User-Documentation/`. Add a new task-oriented guide (or update an existing one) describing how an end-user uses the feature, and link it from `documentation/User-Documentation/README.md`.
