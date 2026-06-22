@@ -186,6 +186,7 @@ See [Initial Setup](documentation/Admin-Documentation/initial-setup.md) for deta
 |-------|-------------|
 | [Docker Deployment](documentation/Admin-Documentation/docker-deployment.md) | Volumes, ports, container startup, building locally |
 | [Local Deployment](documentation/Admin-Documentation/local-deployment.md) | Manual setup, scripts reference, systemd service |
+| [Alwaysdata Deployment](documentation/Admin-Documentation/alwaysdata-deployment.md) | Shared hosting (no Docker), PostgreSQL, Node.js site, SSL |
 | [Initial Setup](documentation/Admin-Documentation/initial-setup.md) | Setup Wizard, default credentials, Family Manager |
 | [Environment Variables](documentation/Admin-Documentation/environment-variables.md) | Full variable reference, auto-generation, security notes |
 | [Upgrades and Backups](documentation/Admin-Documentation/upgrades-and-backups.md) | Upgrade procedures, backup/restore for Docker and local |

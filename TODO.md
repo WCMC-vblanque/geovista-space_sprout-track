@@ -12,6 +12,38 @@ estéticas o de nicho).
 
 ---
 
+## 🐛 Bugs conocidos (corregir cuanto antes)
+
+### B1. La importación SQLite → PostgreSQL pierde la fila `Settings` de la familia
+- **Severidad:** Alta — la familia migrada queda **sin poder iniciar sesión**
+  ("Invalid credentials"). Los datos parecen importados (bebé, sueño, tomas), pero
+  falta la fila `Settings`, y el login lee el PIN/`authType` desde `Settings`.
+- **Causa raíz:** en [`app/api/utils/db-backup.ts`](app/api/utils/db-backup.ts), el
+  mapa `BOOLEAN_COLUMNS.Settings` **omite** la columna `includeSolidsInFeedTimer`
+  (un `Boolean` del esquema, ver [`prisma/schema.prisma:509`](prisma/schema.prisma#L509)).
+  SQLite la guarda como `0/1`; sin convertir, la inserción en PostgreSQL (tipado
+  estricto) falla. Fallan tanto el `createMany` por lote como el `create` fila a
+  fila del fallback, y la fila se **descarta en silencio** con un simple
+  `console.warn`. Las demás tablas importan bien, así que el fallo es invisible.
+- **Solo afecta** a migraciones **entre proveedores** (SQLite↔PostgreSQL).
+  SQLite→SQLite copia el `.db` tal cual y no pasa por esta conversión.
+- **Workaround aplicado** (caso real, junio 2026): crear la fila `Settings` a mano
+  vía Prisma (`familyId`, `securityPin`, `authType: 'SYSTEM'`).
+
+**Arreglos (de menor a mayor alcance):**
+- [ ] **Inmediato:** añadir `'includeSolidsInFeedTimer'` a `BOOLEAN_COLUMNS.Settings`.
+- [ ] **Robusto:** dejar de mantener a mano `BOOLEAN_COLUMNS`/`DATE_COLUMNS` y
+      derivar las columnas booleanas/fecha desde el DMMF de Prisma
+      (`Prisma.dmmf.datamodel.models`), para que no se vuelvan a desincronizar
+      cuando se agregue una columna nueva.
+- [ ] **Seguridad:** que el importador **no falle en silencio** — acumular filas/tablas
+      descartadas y devolverlas; mostrar "N filas no se importaron" en la UI de restauración
+      (y fallar ruidosamente si una tabla núcleo como `Settings`/`Family`/`Caretaker` pierde filas).
+- [ ] **Guard:** tras una restauración entre proveedores, verificar que cada `Family`
+      tenga su fila `Settings`; back-fill o error si falta.
+
+---
+
 ## 🚨 Nivel 1 — Alertas Críticas de Salud (lo más urgente)
 
 Hoy la app es **pasiva** (tú la miras para ver qué pasa). Queremos hacerla
