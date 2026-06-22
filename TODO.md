@@ -44,6 +44,36 @@ estéticas o de nicho).
 
 ---
 
+## 📝 Feature: Notas con links y adjuntos (rama `feature/note-attachments`)
+
+Estado: el modelo (`Note.links`, `NoteAttachment`), las APIs (subir/descargar/borrar)
+y el formulario (`NoteForm`) ya funcionan. El detalle de solo-lectura del Timeline
+ahora **muestra** links (abrir) y adjuntos (descargar) — recién implementado. Lo que
+falta para dejarla redonda:
+
+- [ ] **Vista de "todas las notas"** — hoy solo se consultan por el Timeline filtrando
+      por *Notes*. Falta una página/lista dedicada de notas (con búsqueda por contenido
+      y categoría) para revisarlas como historial.
+- [ ] **Previsualización de adjuntos** — el endpoint sirve todo como `attachment`
+      (fuerza descarga). Para imágenes/PDF, servir `inline` y mostrar una miniatura o
+      visor en el detalle, en vez de obligar a descargar.
+- [ ] **Validación de subida** — límite de tamaño y lista blanca de `mimeType` en
+      `app/api/note/upload/route.ts` (evitar subir ejecutables o archivos enormes).
+- [ ] **Indicador en el Timeline** — mostrar un icono 📎/🔗 en la entrada de la nota
+      cuando tenga adjuntos o links, sin tener que abrir el detalle.
+- [ ] **Validación de URL** en `NoteForm` — normalizar/validar que el link sea http(s)
+      antes de añadirlo (evitar `javascript:` u otras URLs no seguras).
+- [ ] **Limpieza de archivos huérfanos** — al borrar una nota/adjunto, confirmar que el
+      archivo cifrado en disco (`Files/notes/...`) también se elimina; añadir un barrido
+      periódico de huérfanos.
+- [ ] **Traducciones** — revisar las claves nuevas (`Links`, `Attachments`, etc.) en los
+      9 idiomas (`node scripts/check-missing-translations.js`).
+- [ ] **Documentación de usuario** — añadir guía en `documentation/User-Documentation/`
+      explicando cómo adjuntar archivos/links a una nota (lo pide CLAUDE.md para toda
+      feature de cara al usuario).
+
+---
+
 ## 🚨 Nivel 1 — Alertas Críticas de Salud (lo más urgente)
 
 Hoy la app es **pasiva** (tú la miras para ver qué pasa). Queremos hacerla
