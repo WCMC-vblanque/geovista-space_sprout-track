@@ -1,3 +1,6 @@
+# Generated at build time (prebuild script)
+/public/build-info.json
+
 # dependencies
 /node_modules
 /st-guardian/node_modules
