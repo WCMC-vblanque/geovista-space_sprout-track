@@ -426,7 +426,7 @@ async function handleGet(req: NextRequest, authContext: AuthResult) {
       .map(log => {
         // Create a new object without the caretaker property
         const { caretaker, ...logWithoutCaretaker } = log;
-        
+
         // Format dates as ISO strings
         return {
           ...logWithoutCaretaker,
@@ -434,6 +434,8 @@ async function handleGet(req: NextRequest, authContext: AuthResult) {
           createdAt: formatForResponse(log.createdAt) || '',
           updatedAt: formatForResponse(log.updatedAt) || '',
           deletedAt: formatForResponse(log.deletedAt),
+          // links is stored as a JSON string; the response type expects string[]
+          links: (() => { try { return log.links ? JSON.parse(log.links) : []; } catch { return []; } })(),
           caretakerId: log.caretakerId,
           caretakerName: log.caretaker ? log.caretaker.name : undefined,
         };
