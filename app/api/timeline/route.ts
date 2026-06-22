@@ -225,7 +225,8 @@ async function handleGet(req: NextRequest, authContext: AuthResult) {
           familyId, // Filter by the verified family ID
         },
         include: {
-          caretaker: true
+          caretaker: true,
+          attachments: true
         },
         orderBy: { time: 'desc' }
       }) : emptyPromise,
@@ -424,8 +425,8 @@ async function handleGet(req: NextRequest, authContext: AuthResult) {
 
     const formattedNoteLogs: ActivityTypeWithCaretaker[] = noteLogs
       .map(log => {
-        // Create a new object without the caretaker property
-        const { caretaker, ...logWithoutCaretaker } = log;
+        // Create a new object without the caretaker/attachments relations
+        const { caretaker, attachments, ...logWithoutCaretaker } = log;
 
         // Format dates as ISO strings
         return {
@@ -436,6 +437,14 @@ async function handleGet(req: NextRequest, authContext: AuthResult) {
           deletedAt: formatForResponse(log.deletedAt),
           // links is stored as a JSON string; the response type expects string[]
           links: (() => { try { return log.links ? JSON.parse(log.links) : []; } catch { return []; } })(),
+          attachments: (attachments || []).map(a => ({
+            id: a.id,
+            originalName: a.originalName,
+            mimeType: a.mimeType,
+            fileSize: a.fileSize,
+            createdAt: formatForResponse(a.createdAt) || '',
+            updatedAt: formatForResponse(a.updatedAt) || '',
+          })),
           caretakerId: log.caretakerId,
           caretakerName: log.caretaker ? log.caretaker.name : undefined,
         };
