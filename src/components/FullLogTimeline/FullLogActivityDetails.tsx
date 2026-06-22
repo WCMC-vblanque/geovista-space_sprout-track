@@ -8,6 +8,7 @@ import {
 } from '@/src/components/ui/form-page';
 import { FullLogActivityDetailsProps } from './full-log-timeline.types';
 import { getActivityDetails, formatTime } from '@/src/components/Timeline/utils';
+import NoteAttachments from '@/src/components/Timeline/NoteAttachments';
 import { useLocalization } from '@/src/context/localization';
 import { useUnit } from '@/src/hooks/useUnit';
 
@@ -101,6 +102,8 @@ const FullLogActivityDetails: React.FC<FullLogActivityDetailsProps> = ({
               </div>
             ))
           )}
+
+          <NoteAttachments activity={activity} />
         </div>
       </FormPageContent>
       <FormPageFooter>

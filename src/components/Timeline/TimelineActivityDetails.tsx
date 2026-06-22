@@ -1,5 +1,5 @@
 import { Button } from '@/src/components/ui/button';
-import { Trash2, Pencil, Download, ExternalLink } from 'lucide-react';
+import { Trash2, Pencil } from 'lucide-react';
 import {
   FormPage,
   FormPageContent,
@@ -7,6 +7,7 @@ import {
 } from '@/src/components/ui/form-page';
 import { TimelineActivityDetailsProps } from './types';
 import { getActivityDetails, formatTime } from './utils';
+import NoteAttachments from '@/src/components/Timeline/NoteAttachments';
 import { useLocalization } from '@/src/context/localization';
 import { useUnit } from '@/src/hooks/useUnit';
 
@@ -46,33 +47,6 @@ const TimelineActivityDetails = ({
     ];
   }
   const activityDetails = getActivityDetails(activity, settings, t);
-
-  // Note-specific extras (links + attachments) shown read-only below the details
-  const isNote = 'content' in activity;
-  const noteLinks: string[] = isNote ? ((activity as any).links || []) : [];
-  const noteAttachments: { id: string; originalName: string }[] = isNote ? ((activity as any).attachments || []) : [];
-
-  // The file endpoint requires the auth header, so download via fetch -> blob
-  const handleDownloadAttachment = async (attachmentId: string, originalName: string) => {
-    try {
-      const authToken = localStorage.getItem('authToken');
-      const response = await fetch(`/api/note/file/${attachmentId}`, {
-        headers: { 'Authorization': `Bearer ${authToken}` },
-      });
-      if (!response.ok) throw new Error('Failed to download attachment');
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = originalName;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-    } catch (error) {
-      console.error('Error downloading attachment:', error);
-    }
-  };
 
   const handleEdit = () => {
     if (activity) {
@@ -138,50 +112,7 @@ const TimelineActivityDetails = ({
             ))
           )}
 
-          {isNote && (noteLinks.length > 0 || noteAttachments.length > 0) && (
-            <div className="space-y-3 pt-2">
-              {noteLinks.length > 0 && (
-                <div>
-                  <span className="text-sm font-medium text-gray-500 timeline-details-label">{t('Links')}:</span>
-                  <ul className="mt-1 space-y-1">
-                    {noteLinks.map((url, index) => (
-                      <li key={index}>
-                        <a
-                          href={url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-sm text-teal-600 hover:underline inline-flex items-center gap-1 break-all"
-                        >
-                          <ExternalLink className="h-3.5 w-3.5 flex-shrink-0" />
-                          {url}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-              {noteAttachments.length > 0 && (
-                <div>
-                  <span className="text-sm font-medium text-gray-500 timeline-details-label">{t('Attachments')}:</span>
-                  <ul className="mt-1 space-y-1">
-                    {noteAttachments.map((att) => (
-                      <li key={att.id}>
-                        <button
-                          type="button"
-                          onClick={() => handleDownloadAttachment(att.id, att.originalName)}
-                          title={t('Download')}
-                          className="text-sm text-teal-600 hover:underline inline-flex items-center gap-1 break-all text-left"
-                        >
-                          <Download className="h-3.5 w-3.5 flex-shrink-0" />
-                          {att.originalName}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-          )}
+          <NoteAttachments activity={activity} />
         </div>
       </FormPageContent>
       <FormPageFooter>
