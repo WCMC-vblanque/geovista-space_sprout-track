@@ -608,6 +608,7 @@ const StatsTab: React.FC<StatsTabProps> = ({
           count: breastFeedCount,
           leftMinutes: leftBreastMinutes,
           rightMinutes: rightBreastMinutes,
+          totalMinutes: leftBreastMinutes + rightBreastMinutes,
           leftCount: leftBreastCount,
           rightCount: rightBreastCount,
           avgLeftMinutes: avgLeftBreastMinutes,
