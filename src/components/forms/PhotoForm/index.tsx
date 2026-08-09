@@ -125,7 +125,7 @@ export default function PhotoForm({
     setLoading(true);
 
     try {
-      const utcTimeString = toUTCString(selectedDateTime);
+      const utcTimeString = toUTCString(selectedDateTime) || selectedDateTime.toISOString();
 
       const formData = new FormData();
       formData.append('babyId', babyId);
