@@ -295,6 +295,8 @@ const FullLogTimeline: React.FC<FullLogTimelineProps> = ({
               return 'activities' in activity && 'type' in activity && ['TUMMY_TIME', 'INDOOR_PLAY', 'OUTDOOR_PLAY', 'WALK', 'CUSTOM'].includes((activity as any).type);
             case 'vaccine':
               return 'vaccineName' in activity;
+            case 'photo':
+              return 'originalName' in activity;
             default:
               return true;
           }
@@ -349,6 +351,8 @@ const FullLogTimeline: React.FC<FullLogTimelineProps> = ({
               return 'doseAmount' in activity && 'medicineId' in activity;
             case 'vaccine':
               return 'vaccineName' in activity;
+            case 'photo':
+              return 'originalName' in activity;
             default:
               return true;
           }

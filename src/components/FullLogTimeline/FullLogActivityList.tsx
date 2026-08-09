@@ -5,6 +5,7 @@ import { FullLogActivityListProps } from './full-log-timeline.types';
 import { cn } from '@/src/lib/utils';
 import styles from './full-log-timeline.styles';
 import { getActivityIcon, getActivityStyle, getActivityDescription } from '@/src/components/Timeline/utils';
+import { PhotoThumbnail } from '@/src/components/ui/photo-thumbnail';
 import { useLocalization } from '@/src/context/localization';
 
 /**
@@ -41,9 +42,16 @@ const FullLogActivityList: React.FC<FullLogActivityListProps> = ({
                   onClick={() => onActivitySelect(activity)}
                 >
                   <div className={cn(styles.activityContent, "full-log-timeline-activity-content")}>
-                    <div className={cn(styles.activityIcon, style.bg, "full-log-timeline-activity-icon")}>
-                      {getActivityIcon(activity)}
-                    </div>
+                    {'originalName' in activity ? (
+                      <PhotoThumbnail
+                        photoId={activity.id}
+                        className={cn(styles.activityIcon, "object-cover rounded-lg full-log-timeline-activity-icon")}
+                      />
+                    ) : (
+                      <div className={cn(styles.activityIcon, style.bg, "full-log-timeline-activity-icon")}>
+                        {getActivityIcon(activity)}
+                      </div>
+                    )}
                     <div className={cn(styles.activityDetails, "full-log-timeline-activity-details")}>
                       <div className="flex items-center gap-2 text-xs">
                         <span className={cn(styles.activityType, "full-log-timeline-activity-type")}>

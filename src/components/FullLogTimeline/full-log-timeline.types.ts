@@ -10,7 +10,7 @@ export type FullLogActivityType = ImportedActivityType & {
 // Use FullLogActivityType for internal component logic
 export type ActivityType = FullLogActivityType;
 
-export type FilterType = 'sleep' | 'feed' | 'diaper' | 'note' | 'bath' | 'pump' | 'breast-milk-adjustment' | 'milestone' | 'measurement' | 'medicine' | 'play' | 'vaccine' | null;
+export type FilterType = 'sleep' | 'feed' | 'diaper' | 'note' | 'bath' | 'pump' | 'breast-milk-adjustment' | 'milestone' | 'measurement' | 'medicine' | 'play' | 'vaccine' | 'photo' | null;
 
 export interface FullLogTimelineProps {
   activities: ImportedActivityType[];

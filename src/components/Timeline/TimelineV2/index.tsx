@@ -74,6 +74,15 @@ const TimelineV2 = ({ babyId, refreshTrigger, onLatestStatusReady, onActivityDel
       status.lastDiaperTime = new Date((lastDiaper as any).time);
     }
 
+    // Find last photo time
+    const lastPhoto = activities
+      .filter((a) => 'originalName' in a && 'time' in a)
+      .sort((a, b) => new Date((b as any).time).getTime() - new Date((a as any).time).getTime())[0];
+
+    if (lastPhoto) {
+      status.lastPhotoTime = new Date((lastPhoto as any).time);
+    }
+
     // Find sleep status
     const sleepLogs = activities
       .filter((a): a is ActivityType =>
@@ -363,6 +372,8 @@ const TimelineV2 = ({ babyId, refreshTrigger, onLatestStatusReady, onActivityDel
               return 'activities' in activity && 'type' in activity && ['TUMMY_TIME', 'INDOOR_PLAY', 'OUTDOOR_PLAY', 'WALK', 'CUSTOM'].includes((activity as any).type);
             case 'vaccine':
               return 'vaccineName' in activity;
+            case 'photo':
+              return 'originalName' in activity;
             default:
               return true;
           }

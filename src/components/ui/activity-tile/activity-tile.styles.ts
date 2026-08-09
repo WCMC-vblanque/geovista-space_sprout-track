@@ -23,6 +23,7 @@ export const activityTileStyles = {
       milestone: "",
       medicine: "",
       vaccine: "",
+      photo: "",
       default: ""
     }
   },
@@ -41,6 +42,7 @@ export const activityTileStyles = {
       milestone: "",
       medicine: "",
       vaccine: "",
+      photo: "",
       default: ""
     }
   },
@@ -59,9 +61,11 @@ export const activityTileStyles = {
       medicine: "text-red-600",
       vaccine: "text-red-600",
       milestone: "text-pink-600",
+      photo: "text-cyan-600",
       default: "text-gray-800"
     },
-    // Default icon paths for each variant
+    // Default icon paths for each variant (photo has no dedicated PNG asset - it
+    // always renders as a Lucide Camera icon, see activity-tile-icon.tsx)
     defaultIcons: {
       sleep: '/crib-128.png',
       feed: '/bottle-128.png',
@@ -74,6 +78,7 @@ export const activityTileStyles = {
       milestone: '/milestone-128.png',
       medicine: '/med-128.png',
       vaccine: '/vaccine-128.png',
+      photo: '',
       default: '/default-128.png'
     }
   },

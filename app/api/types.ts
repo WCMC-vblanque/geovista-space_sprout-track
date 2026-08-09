@@ -1,4 +1,4 @@
-import { Baby, SleepLog, FeedLog, DiaperLog, MoodLog, Note, Caretaker, Settings as PrismaSettings, Gender, SleepType, SleepQuality, FeedType, BreastSide, DiaperType, Mood, PumpLog, PlayLog, Milestone, MilestoneCategory, Measurement, MeasurementType, Medicine, MedicineLog, EmailConfig as PrismaEmailConfig, EmailProviderType, BreastMilkAdjustment, ActiveBreastFeed, ActiveActivity, VaccineLog, VaccineDocument } from '@prisma/client';
+import { Baby, SleepLog, FeedLog, DiaperLog, MoodLog, Note, Caretaker, Settings as PrismaSettings, Gender, SleepType, SleepQuality, FeedType, BreastSide, DiaperType, Mood, PumpLog, PlayLog, Milestone, MilestoneCategory, Measurement, MeasurementType, Medicine, MedicineLog, EmailConfig as PrismaEmailConfig, EmailProviderType, BreastMilkAdjustment, ActiveBreastFeed, ActiveActivity, VaccineLog, VaccineDocument, PhotoLog } from '@prisma/client';
 
 // Family types
 export interface Family {
@@ -410,6 +410,20 @@ export interface VaccineLogCreate {
   doseNumber?: number;
   notes?: string;
   contactIds?: string[];
+}
+
+// Photo log types
+export type PhotoLogResponse = Omit<PhotoLog, 'time' | 'createdAt' | 'updatedAt' | 'deletedAt' | 'storedName'> & {
+  time: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+};
+
+export interface PhotoLogCreate {
+  babyId: string;
+  time: string;
+  replace?: boolean;
 }
 
 // Beta Subscriber types

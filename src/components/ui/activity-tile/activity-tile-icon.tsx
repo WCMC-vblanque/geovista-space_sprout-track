@@ -1,5 +1,5 @@
 import React from 'react';
-import { Moon, Edit, Icon, LampWallDown, Trophy, Baby, Activity, Syringe } from 'lucide-react';
+import { Moon, Edit, Icon, LampWallDown, Trophy, Baby, Activity, Syringe, Camera } from 'lucide-react';
 import { diaper, bottleBaby } from '@lucide/lab';
 import { cn } from "@/src/lib/utils";
 import { activityTileStyles as styles } from './activity-tile.styles';
@@ -18,9 +18,13 @@ export function ActivityTileIcon({
   const variant = variantProp || getActivityVariant(activity);
   
   let icon = null;
-  
+
+  // Photo doesn't have a dedicated PNG asset like the other variants - use a Lucide icon instead
+  if (variant === 'photo') {
+    icon = <Camera className={cn(styles.icon.base, styles.icon.variants[variant])} />;
+  }
   // For buttons, always use the image icons
-  if (isButton && styles.icon.defaultIcons[variant]) {
+  else if (isButton && styles.icon.defaultIcons[variant]) {
     icon = <img
       src={styles.icon.defaultIcons[variant]}
       alt={variant}

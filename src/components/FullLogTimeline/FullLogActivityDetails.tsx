@@ -10,6 +10,7 @@ import { FullLogActivityDetailsProps } from './full-log-timeline.types';
 import { getActivityDetails, formatTime } from '@/src/components/Timeline/utils';
 import { useLocalization } from '@/src/context/localization';
 import { useUnit } from '@/src/hooks/useUnit';
+import { PhotoThumbnail } from '@/src/components/ui/photo-thumbnail';
 
 import './full-log-timeline.css';
 
@@ -86,6 +87,12 @@ const FullLogActivityDetails: React.FC<FullLogActivityDetailsProps> = ({
     >
       <FormPageContent>
         <div className="space-y-4 p-4">
+          {'originalName' in activity && (
+            <PhotoThumbnail
+              photoId={activity.id}
+              className="w-full max-h-96 object-contain rounded-lg"
+            />
+          )}
           {medicineDetails ? (
             medicineDetails.map((detail, index) => (
               <div key={index} className="flex justify-between items-center">
