@@ -125,7 +125,7 @@ const StatsTab: React.FC<StatsTabProps> = ({
         feeding: {
           totalFeeds: 0,
           bottleFeeds: { count: 0, amounts: {}, avgByType: [] },
-          breastFeeds: { count: 0, leftMinutes: 0, rightMinutes: 0, leftCount: 0, rightCount: 0, avgLeftMinutes: 0, avgRightMinutes: 0 },
+          breastFeeds: { count: 0, leftMinutes: 0, rightMinutes: 0, totalMinutes: 0, leftCount: 0, rightCount: 0, avgLeftMinutes: 0, avgRightMinutes: 0 },
           solidsFeeds: { count: 0, amounts: {}, avgByFood: [] },
         },
         diaper: {
