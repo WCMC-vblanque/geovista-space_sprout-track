@@ -74,6 +74,45 @@ falta para dejarla redonda:
 
 ---
 
+## 📸 Feature: Foto del pañal + tamaño de pipí/caca
+
+Estado: no implementado — idea surgida durante el desarrollo de la foto diaria del
+bebé (rama `feature/daily-photo`). Reutilizará el pipeline de fotos (compresión con
+`sharp`, cifrado en `Files/`) ya construido para esa rama.
+
+- [ ] **Campo de foto en `DiaperLog`** — adjuntar una foto opcional al registro de
+      cambio de pañal, mismo patrón de compresión/cifrado que `PhotoLog`.
+- [ ] **Tamaño de pipí** — campo opcional `pumpSize` (pequeño/medio/grande) en
+      `DiaperLog`, visible cuando `type` es `WET` o `BOTH`.
+- [ ] **Tamaño de caca** — campo opcional `poopSize` (pequeño/medio/grande) en
+      `DiaperLog`, visible cuando `type` es `DIRTY` o `BOTH`. Independiente del
+      tamaño de pipí (un pañal `BOTH` puede tener ambos valores a la vez).
+- [ ] **UI en `DiaperForm`** — selector de tamaño (pequeño/medio/grande) para cada
+      tipo presente, además del selector de foto.
+- [ ] **Miniatura en el timeline** — igual que la foto diaria, mostrar miniatura en
+      `TimelineActivityList`/`FullLogActivityList` cuando el pañal tenga foto.
+- [ ] **Traducciones** — nuevas claves en los 9 idiomas.
+
+---
+
+## 💾 Feature: Guard de espacio en disco antes de subir archivos
+
+Estado: no implementado — pensado para evitar saturar el hosting compartido
+(Alwaysdata) al subir fotos/adjuntos.
+
+- [ ] **Utilidad compartida** — función en `src/lib/` (o `app/api/utils/`) que use
+      `fs.statfsSync` sobre el filesystem de `Files/` y devuelva el espacio libre (%).
+- [ ] **Umbral configurable** — rechazar la subida si el espacio libre quedaría por
+      debajo del 5% (valor por defecto, idealmente vía variable de entorno).
+- [ ] **Aplicar en todos los endpoints de subida** — `app/api/note/upload`,
+      `app/api/feedback/upload`, `app/api/photo-log`, y el futuro upload de foto de
+      pañal — todos deben usar la misma utilidad antes de escribir en disco.
+- [ ] **Mensaje de error claro** — devolver un error legible al usuario/administrador
+      indicando que el servidor está sin espacio, en vez de un fallo genérico.
+- [ ] **Traducciones** — nuevo mensaje de error en los 9 idiomas.
+
+---
+
 ## 🚨 Nivel 1 — Alertas Críticas de Salud (lo más urgente)
 
 Hoy la app es **pasiva** (tú la miras para ver qué pasa). Queremos hacerla
