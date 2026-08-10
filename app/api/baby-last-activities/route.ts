@@ -99,11 +99,15 @@ async function handleGet(req: NextRequest, authContext: AuthResult) {
     const response = {
       lastDiaper: lastDiaper ? {
         ...lastDiaper,
+        photoStoredName: undefined,
+        hasPhoto: !!lastDiaper.photoStoredName,
         time: formatForResponse(lastDiaper.time) || '',
         caretakerName: lastDiaper.caretaker?.name
       } : null,
       lastPoopDiaper: lastPoopDiaper ? {
         ...lastPoopDiaper,
+        photoStoredName: undefined,
+        hasPhoto: !!lastPoopDiaper.photoStoredName,
         time: formatForResponse(lastPoopDiaper.time) || '',
         caretakerName: lastPoopDiaper.caretaker?.name
       } : null,

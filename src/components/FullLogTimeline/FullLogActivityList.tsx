@@ -6,6 +6,7 @@ import { cn } from '@/src/lib/utils';
 import styles from './full-log-timeline.styles';
 import { getActivityIcon, getActivityStyle, getActivityDescription } from '@/src/components/Timeline/utils';
 import { useLocalization } from '@/src/context/localization';
+import { PhotoThumbnail } from '@/src/components/ui/photo-thumbnail';
 
 /**
  * FullLogActivityList Component
@@ -44,6 +45,13 @@ const FullLogActivityList: React.FC<FullLogActivityListProps> = ({
                     <div className={cn(styles.activityIcon, style.bg, "full-log-timeline-activity-icon")}>
                       {getActivityIcon(activity)}
                     </div>
+                    {'condition' in activity && (activity as any).hasPhoto && (
+                      <PhotoThumbnail
+                        src={`/api/diaper-log/file/${activity.id}`}
+                        alt={t('Photo')}
+                        className="flex-shrink-0 w-8 h-8 object-cover rounded-md border border-gray-200 full-log-timeline-activity-thumbnail"
+                      />
+                    )}
                     <div className={cn(styles.activityDetails, "full-log-timeline-activity-details")}>
                       <div className="flex items-center gap-2 text-xs">
                         <span className={cn(styles.activityType, "full-log-timeline-activity-type")}>

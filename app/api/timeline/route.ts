@@ -407,9 +407,9 @@ async function handleGet(req: NextRequest, authContext: AuthResult) {
 
     const formattedDiaperLogs: ActivityTypeWithCaretaker[] = diaperLogs
       .map(log => {
-        // Create a new object without the caretaker property
-        const { caretaker, ...logWithoutCaretaker } = log;
-        
+        // Create a new object without the caretaker property and the raw encrypted photo filename
+        const { caretaker, photoStoredName, ...logWithoutCaretaker } = log;
+
         // Format dates as ISO strings
         return {
           ...logWithoutCaretaker,
@@ -419,6 +419,7 @@ async function handleGet(req: NextRequest, authContext: AuthResult) {
           deletedAt: formatForResponse(log.deletedAt),
           caretakerId: log.caretakerId,
           caretakerName: log.caretaker ? log.caretaker.name : undefined,
+          hasPhoto: !!photoStoredName,
         };
       });
 

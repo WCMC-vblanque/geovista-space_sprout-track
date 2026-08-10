@@ -9,6 +9,7 @@ import { TimelineActivityDetailsProps } from './types';
 import { getActivityDetails, formatTime } from './utils';
 import { useLocalization } from '@/src/context/localization';
 import { useUnit } from '@/src/hooks/useUnit';
+import { PhotoThumbnail } from '@/src/components/ui/photo-thumbnail';
 
 import './timeline-activity-details.css';
 
@@ -95,6 +96,13 @@ const TimelineActivityDetails = ({
     >
       <FormPageContent>
         <div className="space-y-4 p-4">
+          {'condition' in activity && (activity as any).hasPhoto && (
+            <PhotoThumbnail
+              src={`/api/diaper-log/file/${activity.id}`}
+              alt={t('Photo')}
+              className="w-full max-h-60 object-contain rounded-lg border border-gray-200 timeline-details-photo"
+            />
+          )}
           {medicineDetails ? (
             medicineDetails.map((detail, index) => (
               <div key={index} className="flex justify-between items-center">

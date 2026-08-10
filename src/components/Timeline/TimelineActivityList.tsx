@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '@/src/context/theme';
 import { useLocalization } from '@/src/context/localization';
 import { useUnit } from '@/src/hooks/useUnit';
+import { PhotoThumbnail } from '@/src/components/ui/photo-thumbnail';
 
 import './timeline-activity-list.css';
 
@@ -413,7 +414,16 @@ const TimelineActivityList = ({
                                     <div className={`flex-shrink-0 ${style.bg} p-2 rounded-xl shadow-sm`}>
                                       {getActivityIcon(activity)}
                                     </div>
-                                    
+
+                                    {/* Diaper Photo Thumbnail */}
+                                    {'condition' in activity && (activity as any).hasPhoto && (
+                                      <PhotoThumbnail
+                                        src={`/api/diaper-log/file/${activity.id}`}
+                                        alt={t('Photo')}
+                                        className="flex-shrink-0 w-10 h-10 object-cover rounded-lg border border-gray-200 timeline-activity-thumbnail"
+                                      />
+                                    )}
+
                                     {/* Activity Content */}
                                     <div className="flex-1 min-w-0" onClick={() => {
                                       // Add a small delay to allow the click animation to be visible

@@ -1,12 +1,14 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { DiaperType } from '@prisma/client';
+import React, { useState, useEffect, useRef } from 'react';
+import { DiaperType, DiaperSize } from '@prisma/client';
 import { DiaperLogResponse } from '@/app/api/types';
 import { Button } from '@/src/components/ui/button';
 import { Input } from '@/src/components/ui/input';
 import { DateTimePicker } from '@/src/components/ui/date-time-picker';
 import { Checkbox } from '@/src/components/ui/checkbox';
+import { Label } from '@/src/components/ui/label';
+import { Camera, Image as ImageIcon, X } from 'lucide-react';
 import {
   Select,
   SelectContent,
@@ -14,16 +16,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/src/components/ui/select';
-import { 
-  FormPage, 
-  FormPageContent, 
-  FormPageFooter 
+import {
+  FormPage,
+  FormPageContent,
+  FormPageFooter
 } from '@/src/components/ui/form-page';
 import { useTimezone } from '@/app/context/timezone';
 import { useToast } from '@/src/components/ui/toast';
 import { handleExpirationError } from '@/src/lib/expiration-error-handler';
 import { useParams } from 'next/navigation';
 import { useLocalization } from '@/src/context/localization';
+import { PhotoThumbnail } from '@/src/components/ui/photo-thumbnail';
 
 interface DiaperFormProps {
   isOpen: boolean;
@@ -47,7 +50,7 @@ export default function DiaperForm({
   const { showToast } = useToast();
   const params = useParams();
   const familySlug = params?.slug as string;
-  
+
   const [selectedDateTime, setSelectedDateTime] = useState<Date>(() => {
     try {
       // Try to parse the initialTime
@@ -69,15 +72,23 @@ export default function DiaperForm({
     color: '',
     blowout: false,
     creamApplied: false,
+    pumpSize: '' as DiaperSize | '',
+    poopSize: '' as DiaperSize | '',
   });
   const [loading, setLoading] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
   const [initializedTime, setInitializedTime] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [removeExistingPhoto, setRemoveExistingPhoto] = useState(false);
+
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
 
   // Handle date/time change
   const handleDateTimeChange = (date: Date) => {
     setSelectedDateTime(date);
-    
+
     // Also update the time in formData for compatibility with existing code
     // Format the date as ISO string for storage in formData
     const year = date.getFullYear();
@@ -85,10 +96,43 @@ export default function DiaperForm({
     const day = String(date.getDate()).padStart(2, '0');
     const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
-    
+
     const formattedTime = `${year}-${month}-${day}T${hours}:${minutes}`;
     setFormData(prev => ({ ...prev, time: formattedTime }));
   };
+
+  const handleFileSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+    }
+    setSelectedFile(file);
+    setPreviewUrl(URL.createObjectURL(file));
+    setRemoveExistingPhoto(false);
+
+    // Allow re-selecting the same file later
+    e.target.value = '';
+  };
+
+  const handleRemovePhoto = () => {
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+    }
+    setSelectedFile(null);
+    setPreviewUrl(null);
+    setRemoveExistingPhoto(true);
+  };
+
+  // Clean up the object URL when it changes or the component unmounts
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
 
   useEffect(() => {
     if (isOpen && !isInitialized) {
@@ -103,7 +147,7 @@ export default function DiaperForm({
         } catch (error) {
           console.error('Error parsing activity time:', error);
         }
-        
+
         // Format the date for the time property
         const date = new Date(activity.time);
         const year = date.getFullYear();
@@ -112,7 +156,7 @@ export default function DiaperForm({
         const hours = String(date.getHours()).padStart(2, '0');
         const minutes = String(date.getMinutes()).padStart(2, '0');
         const formattedTime = `${year}-${month}-${day}T${hours}:${minutes}`;
-        
+
         setFormData({
           time: formattedTime,
           type: activity.type,
@@ -120,8 +164,13 @@ export default function DiaperForm({
           color: activity.color || '',
           blowout: activity.blowout || false,
           creamApplied: activity.creamApplied || false,
+          pumpSize: activity.pumpSize || '',
+          poopSize: activity.poopSize || '',
         });
-        
+        setSelectedFile(null);
+        setPreviewUrl(null);
+        setRemoveExistingPhoto(false);
+
         // Store the initial time used for editing
         setInitializedTime(activity.time);
       } else {
@@ -130,7 +179,7 @@ export default function DiaperForm({
           const date = new Date(initialTime);
           if (!isNaN(date.getTime())) {
             setSelectedDateTime(date);
-            
+
             // Also update the time in formData
             const year = date.getFullYear();
             const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -138,17 +187,20 @@ export default function DiaperForm({
             const hours = String(date.getHours()).padStart(2, '0');
             const minutes = String(date.getMinutes()).padStart(2, '0');
             const formattedTime = `${year}-${month}-${day}T${hours}:${minutes}`;
-            
+
             setFormData(prev => ({ ...prev, time: formattedTime }));
           }
         } catch (error) {
           console.error('Error parsing initialTime:', error);
         }
-        
+        setSelectedFile(null);
+        setPreviewUrl(null);
+        setRemoveExistingPhoto(false);
+
         // Store the initial time used for new entry
         setInitializedTime(initialTime);
       }
-      
+
       // Mark as initialized
       setIsInitialized(true);
     } else if (!isOpen) {
@@ -167,7 +219,7 @@ export default function DiaperForm({
       console.error('Required fields missing: type');
       return;
     }
-    
+
     // Validate date time
     if (!selectedDateTime || isNaN(selectedDateTime.getTime())) {
       console.error('Required fields missing: valid date time');
@@ -180,19 +232,22 @@ export default function DiaperForm({
       // Convert local time to UTC ISO string using the timezone context
       // We use selectedDateTime instead of formData.time for better accuracy
       const utcTimeString = toUTCString(selectedDateTime);
-      
-      console.log('Original time (local):', formData.time);
-      console.log('Converted time (UTC):', utcTimeString);
 
-      const payload = {
-        babyId,
-        time: utcTimeString, // Send the UTC ISO string instead of local time
-        type: formData.type,
-        condition: formData.condition || null,
-        color: formData.color || null,
-        blowout: formData.blowout,
-        creamApplied: formData.creamApplied,
-      };
+      const payload = new FormData();
+      payload.append('babyId', babyId);
+      payload.append('time', utcTimeString || '');
+      payload.append('type', formData.type);
+      if (formData.condition) payload.append('condition', formData.condition);
+      if (formData.color) payload.append('color', formData.color);
+      payload.append('blowout', formData.blowout ? 'true' : 'false');
+      payload.append('creamApplied', formData.creamApplied ? 'true' : 'false');
+      if (formData.pumpSize) payload.append('pumpSize', formData.pumpSize);
+      if (formData.poopSize) payload.append('poopSize', formData.poopSize);
+      if (selectedFile) {
+        payload.append('file', selectedFile);
+      } else if (removeExistingPhoto) {
+        payload.append('removePhoto', 'true');
+      }
 
       // Get auth token from localStorage
       const authToken = localStorage.getItem('authToken');
@@ -200,18 +255,17 @@ export default function DiaperForm({
       const response = await fetch(`/api/diaper-log${activity ? `?id=${activity.id}` : ''}`, {
         method: activity ? 'PUT' : 'POST',
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': authToken ? `Bearer ${authToken}` : '',
         },
-        body: JSON.stringify(payload),
+        body: payload,
       });
 
       if (!response.ok) {
         // Check if this is an account expiration error
         if (response.status === 403) {
           const { isExpirationError } = await handleExpirationError(
-            response, 
-            showToast, 
+            response,
+            showToast,
             'tracking diaper changes'
           );
           if (isExpirationError) {
@@ -219,14 +273,14 @@ export default function DiaperForm({
             return;
           }
         }
-        
+
         // For other errors, throw as before
         throw new Error(t('Failed to save diaper log'));
       }
 
       onClose();
       onSuccess?.();
-      
+
       // Reset form data
       setSelectedDateTime(new Date(initialTime));
       setFormData({
@@ -236,7 +290,15 @@ export default function DiaperForm({
         color: '',
         blowout: false,
         creamApplied: false,
+        pumpSize: '' as DiaperSize | '',
+        poopSize: '' as DiaperSize | '',
       });
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+      setSelectedFile(null);
+      setPreviewUrl(null);
+      setRemoveExistingPhoto(false);
     } catch (error) {
       console.error('Error saving diaper log:', error);
     } finally {
@@ -264,7 +326,7 @@ export default function DiaperForm({
                 placeholder={t("Select diaper change time...")}
               />
             </div>
-            
+
             {/* Type Selection - Full width on all screens */}
             <div>
               <label className="form-label">{t('Type')}</label>
@@ -314,6 +376,28 @@ export default function DiaperForm({
               </>
             )}
 
+            {(formData.type === 'WET' || formData.type === 'BOTH') && (
+              <div>
+                <label className="form-label">{t('Pee Size')}</label>
+                <Select
+                  value={formData.pumpSize}
+                  onValueChange={(value: DiaperSize) =>
+                    setFormData({ ...formData, pumpSize: value })
+                  }
+                  disabled={loading}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder={t("Select size")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="SMALL">{t('Small')}</SelectItem>
+                    <SelectItem value="MEDIUM">{t('Medium')}</SelectItem>
+                    <SelectItem value="LARGE">{t('Large')}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
             {formData.type && formData.type !== 'WET' && (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
@@ -360,6 +444,101 @@ export default function DiaperForm({
                 </div>
               </div>
             )}
+
+            {formData.type && formData.type !== 'WET' && (
+              <div>
+                <label className="form-label">{t('Poo Size')}</label>
+                <Select
+                  value={formData.poopSize}
+                  onValueChange={(value: DiaperSize) =>
+                    setFormData({ ...formData, poopSize: value })
+                  }
+                  disabled={loading}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder={t("Select size")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="SMALL">{t('Small')}</SelectItem>
+                    <SelectItem value="MEDIUM">{t('Medium')}</SelectItem>
+                    <SelectItem value="LARGE">{t('Large')}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+            {/* Photo capture/pick */}
+            <div className="space-y-2">
+              <Label>{t('Photo')}</Label>
+
+              <input
+                ref={cameraInputRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                className="hidden"
+                onChange={handleFileSelected}
+              />
+              <input
+                ref={galleryInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleFileSelected}
+              />
+
+              {previewUrl ? (
+                <div className="space-y-2">
+                  <img
+                    src={previewUrl}
+                    alt={t('Photo preview')}
+                    className="w-full max-h-60 object-contain rounded-lg border border-gray-200"
+                  />
+                </div>
+              ) : activity?.hasPhoto && !removeExistingPhoto ? (
+                <div className="space-y-2">
+                  <PhotoThumbnail
+                    src={`/api/diaper-log/file/${activity.id}`}
+                    alt={t('Photo preview')}
+                    className="w-full max-h-60 object-contain rounded-lg border border-gray-200"
+                  />
+                </div>
+              ) : null}
+
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="flex-1"
+                  disabled={loading}
+                  onClick={() => cameraInputRef.current?.click()}
+                >
+                  <Camera className="h-4 w-4 mr-2" />
+                  {t('Take Photo')}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="flex-1"
+                  disabled={loading}
+                  onClick={() => galleryInputRef.current?.click()}
+                >
+                  <ImageIcon className="h-4 w-4 mr-2" />
+                  {t('Choose from Gallery')}
+                </Button>
+                {(previewUrl || (activity?.hasPhoto && !removeExistingPhoto)) && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={loading}
+                    onClick={handleRemovePhoto}
+                  >
+                    <X className="h-4 w-4 mr-2" />
+                    {t('Remove image')}
+                  </Button>
+                )}
+              </div>
+            </div>
           </div>
           </form>
         </FormPageContent>

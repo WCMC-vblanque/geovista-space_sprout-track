@@ -43,6 +43,12 @@ enum DiaperType {
   BOTH
 }
 
+enum DiaperSize {
+  SMALL
+  MEDIUM
+  LARGE
+}
+
 enum Mood {
   HAPPY
   CALM
@@ -399,6 +405,12 @@ model DiaperLog {
   color     String?
   blowout      Boolean    @default(false)
   creamApplied Boolean    @default(false)
+  pumpSize  DiaperSize?
+  poopSize  DiaperSize?
+  photoOriginalName String?
+  photoStoredName   String? // Encrypted filename (uuid.enc) in Files/diapers/
+  photoMimeType     String?
+  photoFileSize     Int? // Size in bytes after compression
   createdAt    DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   deletedAt DateTime?

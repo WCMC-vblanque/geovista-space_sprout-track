@@ -1,4 +1,4 @@
-import { Baby, SleepLog, FeedLog, DiaperLog, MoodLog, Note, Caretaker, Settings as PrismaSettings, Gender, SleepType, SleepQuality, FeedType, BreastSide, DiaperType, Mood, PumpLog, PlayLog, Milestone, MilestoneCategory, Measurement, MeasurementType, Medicine, MedicineLog, EmailConfig as PrismaEmailConfig, EmailProviderType, BreastMilkAdjustment, ActiveBreastFeed, ActiveActivity, VaccineLog, VaccineDocument } from '@prisma/client';
+import { Baby, SleepLog, FeedLog, DiaperLog, MoodLog, Note, Caretaker, Settings as PrismaSettings, Gender, SleepType, SleepQuality, FeedType, BreastSide, DiaperType, DiaperSize, Mood, PumpLog, PlayLog, Milestone, MilestoneCategory, Measurement, MeasurementType, Medicine, MedicineLog, EmailConfig as PrismaEmailConfig, EmailProviderType, BreastMilkAdjustment, ActiveBreastFeed, ActiveActivity, VaccineLog, VaccineDocument } from '@prisma/client';
 
 // Family types
 export interface Family {
@@ -140,11 +140,12 @@ export type ActiveActivityResponse = Omit<ActiveActivity, 'currentStartTime' | '
 };
 
 // Diaper log types
-export type DiaperLogResponse = Omit<DiaperLog, 'time' | 'createdAt' | 'updatedAt' | 'deletedAt'> & {
+export type DiaperLogResponse = Omit<DiaperLog, 'time' | 'createdAt' | 'updatedAt' | 'deletedAt' | 'photoStoredName'> & {
   time: string;
   createdAt: string;
   updatedAt: string;
   deletedAt: string | null;
+  hasPhoto: boolean;
 };
 
 export interface DiaperLogCreate {
@@ -155,6 +156,8 @@ export interface DiaperLogCreate {
   color?: string;
   blowout?: boolean;
   creamApplied?: boolean;
+  pumpSize?: DiaperSize;
+  poopSize?: DiaperSize;
 }
 
 // Mood log types

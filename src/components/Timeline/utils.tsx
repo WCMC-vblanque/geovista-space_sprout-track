@@ -397,18 +397,34 @@ export const getActivityDetails = (activity: ActivityType, settings: Settings | 
           default: return t(capitalize(color));
         }
       };
+      const formatDiaperSize = (size: string) => {
+        switch (size) {
+          case 'SMALL': return t('Small');
+          case 'MEDIUM': return t('Medium');
+          case 'LARGE': return t('Large');
+          default: return t(capitalize(size));
+        }
+      };
       const details = [
         { label: t('Time'), value: formatTime(activity.time, settings, true, t) },
         { label: t('Type'), value: formatDiaperType(activity.type) },
       ];
 
-      // Only show condition and color for DIRTY or BOTH types
+      // Only show pee size for WET or BOTH types
+      if (activity.type !== 'DIRTY' && (activity as any).pumpSize) {
+        details.push({ label: t('Pee Size'), value: formatDiaperSize((activity as any).pumpSize) });
+      }
+
+      // Only show condition, color and poo size for DIRTY or BOTH types
       if (activity.type !== 'WET') {
         if (activity.condition) {
           details.push({ label: t('Condition'), value: formatDiaperCondition(activity.condition) });
         }
         if (activity.color) {
           details.push({ label: t('Color'), value: formatDiaperColor(activity.color) });
+        }
+        if ((activity as any).poopSize) {
+          details.push({ label: t('Poo Size'), value: formatDiaperSize((activity as any).poopSize) });
         }
       }
 
