@@ -1,10 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '../db';
-import { ApiResponse, NoteCreate, NoteResponse } from '../types';
+import { ApiResponse, NoteCreate, NoteResponse, NoteAttachmentResponse } from '../types';
 import { withAuthContext, AuthResult } from '../utils/auth';
 import { toUTC, formatForResponse } from '../utils/timezone';
 import { checkWritePermission } from '../utils/writeProtection';
 import { notifyActivityCreated } from '@/src/lib/notifications/activityHook';
+
+function parseLinks(raw: string | null | undefined): string[] {
+  if (!raw) return [];
+  try { return JSON.parse(raw); } catch { return []; }
+}
+
+function serializeLinks(links: string[] | undefined): string | null {
+  if (!links || links.length === 0) return null;
+  return JSON.stringify(links);
+}
+
+function formatAttachments(attachments: { id: string; originalName: string; mimeType: string; fileSize: number; createdAt: Date; updatedAt: Date }[]): NoteAttachmentResponse[] {
+  return attachments.map(a => ({
+    id: a.id,
+    originalName: a.originalName,
+    mimeType: a.mimeType,
+    fileSize: a.fileSize,
+    createdAt: formatForResponse(a.createdAt) || '',
+    updatedAt: formatForResponse(a.updatedAt) || '',
+  }));
+}
 
 async function handlePost(req: NextRequest, authContext: AuthResult) {
   // Check write permissions for expired accounts
@@ -32,13 +53,16 @@ async function handlePost(req: NextRequest, authContext: AuthResult) {
     // Convert time to UTC for storage
     const timeUTC = toUTC(body.time);
     
+    const { links: linksInput, ...restBody } = body;
     const note = await prisma.note.create({
       data: {
-        ...body,
+        ...restBody,
         time: timeUTC,
         caretakerId: caretakerId,
         familyId: userFamilyId,
+        links: serializeLinks(linksInput),
       },
+      include: { attachments: true },
     });
 
     // Notify subscribers about note creation (non-blocking)
@@ -51,6 +75,8 @@ async function handlePost(req: NextRequest, authContext: AuthResult) {
       createdAt: formatForResponse(note.createdAt) || '',
       updatedAt: formatForResponse(note.updatedAt) || '',
       deletedAt: formatForResponse(note.deletedAt),
+      links: parseLinks(note.links),
+      attachments: formatAttachments(note.attachments),
     };
 
     return NextResponse.json<ApiResponse<NoteResponse>>({
@@ -113,16 +139,18 @@ async function handlePut(req: NextRequest, authContext: AuthResult) {
       );
     }
 
-    // Convert time to UTC if provided
-    const data = body.time
-      ? { ...body, time: toUTC(body.time) }
-      : body;
+    // Convert time to UTC if provided, serialize links
+    const { links: linksInput, ...restBody } = body;
+    const updateData: Record<string, unknown> = {
+      ...restBody,
+      ...(body.time ? { time: toUTC(body.time) } : {}),
+      ...(linksInput !== undefined ? { links: serializeLinks(linksInput) } : {}),
+    };
 
     const note = await prisma.note.update({
-      where: {
-        id,
-      },
-      data,
+      where: { id },
+      data: updateData,
+      include: { attachments: true },
     });
 
     // Format dates as ISO strings for response
@@ -132,6 +160,8 @@ async function handlePut(req: NextRequest, authContext: AuthResult) {
       createdAt: formatForResponse(note.createdAt) || '',
       updatedAt: formatForResponse(note.updatedAt) || '',
       deletedAt: formatForResponse(note.deletedAt),
+      links: parseLinks(note.links),
+      attachments: formatAttachments(note.attachments),
     };
 
     return NextResponse.json<ApiResponse<NoteResponse>>({
@@ -202,10 +232,11 @@ async function handleGet(req: NextRequest, authContext: AuthResult) {
 
     if (id) {
       const note = await prisma.note.findFirst({
-        where: { 
+        where: {
           id,
           familyId: userFamilyId,
         },
+        include: { attachments: true },
       });
 
       if (!note) {
@@ -225,6 +256,8 @@ async function handleGet(req: NextRequest, authContext: AuthResult) {
         createdAt: formatForResponse(note.createdAt) || '',
         updatedAt: formatForResponse(note.updatedAt) || '',
         deletedAt: formatForResponse(note.deletedAt),
+        links: parseLinks(note.links),
+        attachments: formatAttachments(note.attachments),
       };
 
       return NextResponse.json<ApiResponse<NoteResponse>>({
@@ -238,6 +271,7 @@ async function handleGet(req: NextRequest, authContext: AuthResult) {
       orderBy: {
         time: 'desc',
       },
+      include: { attachments: true },
     });
 
     // Format dates as ISO strings for response
@@ -247,6 +281,8 @@ async function handleGet(req: NextRequest, authContext: AuthResult) {
       createdAt: formatForResponse(note.createdAt) || '',
       updatedAt: formatForResponse(note.updatedAt) || '',
       deletedAt: formatForResponse(note.deletedAt),
+      links: parseLinks(note.links),
+      attachments: formatAttachments(note.attachments),
     }));
 
     return NextResponse.json<ApiResponse<NoteResponse[]>>({

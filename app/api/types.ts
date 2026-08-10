@@ -174,11 +174,22 @@ export interface MoodLogCreate {
 }
 
 // Note types
-export type NoteResponse = Omit<Note, 'time' | 'createdAt' | 'updatedAt' | 'deletedAt'> & {
+export type NoteAttachmentResponse = {
+  id: string;
+  originalName: string;
+  mimeType: string;
+  fileSize: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type NoteResponse = Omit<Note, 'time' | 'createdAt' | 'updatedAt' | 'deletedAt' | 'links'> & {
   time: string;
   createdAt: string;
   updatedAt: string;
   deletedAt: string | null;
+  links: string[];
+  attachments?: NoteAttachmentResponse[];
 };
 
 export interface NoteCreate {
@@ -186,6 +197,7 @@ export interface NoteCreate {
   time: string;
   content: string;
   category?: string;
+  links?: string[];
 }
 
 // Caretaker types

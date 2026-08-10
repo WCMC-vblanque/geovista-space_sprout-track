@@ -1,0 +1,4 @@
+/* Monospace (Consolas) version stamp shown only on staging deployments. */
+.build-stamp {
+  font-family: Consolas, 'Courier New', monospace;
+}

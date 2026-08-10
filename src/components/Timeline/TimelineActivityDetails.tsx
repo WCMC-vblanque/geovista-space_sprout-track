@@ -7,6 +7,7 @@ import {
 } from '@/src/components/ui/form-page';
 import { TimelineActivityDetailsProps } from './types';
 import { getActivityDetails, formatTime } from './utils';
+import NoteAttachments from '@/src/components/Timeline/NoteAttachments';
 import { useLocalization } from '@/src/context/localization';
 import { useUnit } from '@/src/hooks/useUnit';
 
@@ -46,7 +47,7 @@ const TimelineActivityDetails = ({
     ];
   }
   const activityDetails = getActivityDetails(activity, settings, t);
-  
+
   const handleEdit = () => {
     if (activity) {
       // Check play activity before sleep since both have duration and type
@@ -110,6 +111,8 @@ const TimelineActivityDetails = ({
               </div>
             ))
           )}
+
+          <NoteAttachments activity={activity} />
         </div>
       </FormPageContent>
       <FormPageFooter>

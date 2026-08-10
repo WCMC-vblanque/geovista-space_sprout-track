@@ -452,6 +452,7 @@ model Note {
   time      DateTime
   content   String // The actual note content
   category  String? // Optional categorization
+  links     String? // JSON array of URLs
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
@@ -461,16 +462,32 @@ model Note {
   familyId String? // Nullable initially for migration
 
   // Relationships
-  baby        Baby       @relation(fields: [babyId], references: [id], onDelete: Cascade)
+  baby        Baby             @relation(fields: [babyId], references: [id], onDelete: Cascade)
   babyId      String
-  caretaker   Caretaker? @relation(fields: [caretakerId], references: [id])
+  caretaker   Caretaker?       @relation(fields: [caretakerId], references: [id])
   caretakerId String?
+  attachments NoteAttachment[]
 
   @@index([time])
   @@index([babyId])
   @@index([caretakerId])
   @@index([deletedAt])
   @@index([familyId])
+}
+
+model NoteAttachment {
+  id           String   @id @default(uuid())
+  originalName String
+  storedName   String
+  mimeType     String
+  fileSize     Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  note   Note   @relation(fields: [noteId], references: [id], onDelete: Cascade)
+  noteId String
+
+  @@index([noteId])
 }
 
 model Settings {

@@ -3,6 +3,7 @@ import { cn } from '@/src/lib/utils';
 import { Metadata } from 'next';
 import { LocalizationProvider } from '@/src/context/localization';
 import { TimezoneProvider } from '@/app/context/timezone';
+import BuildStamp from '@/src/components/BuildStamp';
 import './globals.css';
 
 export const viewport = {
@@ -100,6 +101,7 @@ export default function RootLayout({
             {children}
           </TimezoneProvider>
         </LocalizationProvider>
+        <BuildStamp />
       </body>
     </html>
   );
