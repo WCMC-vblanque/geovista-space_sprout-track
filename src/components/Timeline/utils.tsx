@@ -435,7 +435,7 @@ export const getActivityDetails = (activity: ActivityType, settings: Settings | 
       { label: t('Time'), value: formatTime((activity as any).time, settings, true, t) },
     ];
     return {
-      title: t('Photo'),
+      title: t('Daily Photo'),
       details: [...photoDetails, ...caretakerDetail],
     };
   }
@@ -853,7 +853,7 @@ export const getActivityDescription = (activity: ActivityType, settings: Setting
   if ('originalName' in activity) {
     const time = formatTime((activity as any).time, settings, true, t);
     return {
-      type: t('Photo'),
+      type: t('Daily Photo'),
       details: time
     };
   }

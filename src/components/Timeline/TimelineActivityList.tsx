@@ -551,7 +551,7 @@ const TimelineActivityList = ({
                                           }
                                           
                                           if ('originalName' in activity) {
-                                            return t('Photo');
+                                            return t('Daily Photo');
                                           }
 
                                           if ('doseAmount' in activity && 'medicineId' in activity) {

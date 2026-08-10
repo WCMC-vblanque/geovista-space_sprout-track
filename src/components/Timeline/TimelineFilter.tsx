@@ -57,7 +57,7 @@ const TimelineFilter = ({
     { type: 'milestone', icon: <Trophy className="h-4 w-4" />, label: t('Milestone') },
     { type: 'measurement', icon: <Ruler className="h-4 w-4" />, label: t('Measurement') },
     { type: 'medicine', icon: <PillBottle className="h-4 w-4" />, label: t('Medicine') },
-    { type: 'photo', icon: <Camera className="h-4 w-4" />, label: t('Photo') },
+    { type: 'photo', icon: <Camera className="h-4 w-4" />, label: t('Daily Photo') },
   ] as const;
 
 

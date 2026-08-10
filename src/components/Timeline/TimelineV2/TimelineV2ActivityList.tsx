@@ -401,7 +401,7 @@ const TimelineV2ActivityList = ({
                                     }
                                     
                                     if ('originalName' in activity) {
-                                      return t('Photo');
+                                      return t('Daily Photo');
                                     }
 
                                     if ('vaccineName' in activity) {

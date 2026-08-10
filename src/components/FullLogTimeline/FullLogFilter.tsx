@@ -73,7 +73,7 @@ const FullLogFilter: React.FC<FullLogFilterProps> = ({
     { type: 'medicine', icon: <PillBottle className="h-4 w-4" />, labelKey: 'Medicine' },
     { type: 'play', icon: <Baby className="h-4 w-4" />, labelKey: 'Activity' },
     { type: 'vaccine', icon: <Syringe className="h-4 w-4" />, labelKey: 'Vaccine' },
-    { type: 'photo', icon: <Camera className="h-4 w-4" />, labelKey: 'Photo' },
+    { type: 'photo', icon: <Camera className="h-4 w-4" />, labelKey: 'Daily Photo' },
   ] as const;
 
   // Format date range for display
