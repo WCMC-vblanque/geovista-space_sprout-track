@@ -43,6 +43,7 @@ import {
   Blocks,
   Star,
   Syringe,
+  Camera,
 } from 'lucide-react';
 import { Inter as FontSans } from 'next/font/google';
 import { cn } from '@/src/lib/utils';
@@ -820,6 +821,7 @@ function AppContent({ children }: { children: React.ReactNode }) {
       { id: 'log-activity', label: t('Log activity'), keywords: 'activity actividad juego play tummy time jugar activite', group: quickLog, icon: Blocks, action: go('/log-entry?log=activity') },
       { id: 'log-milestone', label: t('Log milestone'), keywords: 'milestone hito logro etapa desarrollo jalon etape', group: quickLog, icon: Star, action: go('/log-entry?log=milestone') },
       { id: 'log-vaccine', label: t('Log vaccine'), keywords: 'vaccine vacuna inmunizacion vacunacion vaccin immunization shot', group: quickLog, icon: Syringe, action: go('/log-entry?log=vaccine') },
+      { id: 'log-photo', label: t('Log photo'), keywords: 'photo foto camara cámara picture image photographie appareil', group: quickLog, icon: Camera, action: go('/log-entry?log=photo') },
       // Navigation
       { id: 'log-entry', label: t('Log Entry'), keywords: 'log entry registro entrada saisie diaper feed sleep pañal toma sueño', group: nav, icon: NotebookPen, action: go('/log-entry') },
       { id: 'full-log', label: t('Full Log'), keywords: 'full log history historial journal complet activity', group: nav, icon: ScrollText, action: go('/full-log') },
