@@ -7,7 +7,7 @@ import { toUTC, formatForResponse, getSettings } from '../utils/timezone';
 import { checkWritePermission } from '../utils/writeProtection';
 import { encryptAndStore, deleteEncryptedFile, generateStoredName } from '@/src/lib/file-encryption';
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25MB raw upload -- compressed down to WebP before storage
 const ALLOWED_MIME_TYPES = [
   'image/jpeg',
   'image/jpg',
@@ -102,7 +102,7 @@ async function handlePost(req: NextRequest, authContext: AuthResult) {
     }
 
     if (file.size > MAX_FILE_SIZE) {
-      return NextResponse.json<ApiResponse<null>>({ success: false, error: 'File size exceeds 10MB limit' }, { status: 400 });
+      return NextResponse.json<ApiResponse<null>>({ success: false, error: 'File size exceeds 25MB limit' }, { status: 400 });
     }
 
     const fileMimeType = (file.type || '').toLowerCase();

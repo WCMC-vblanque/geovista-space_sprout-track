@@ -286,7 +286,7 @@ export default function DiaperForm({
       if (!response.ok) {
         // Check if this is an account expiration error
         if (response.status === 403) {
-          const { isExpirationError } = await handleExpirationError(
+          const { isExpirationError, errorData } = await handleExpirationError(
             response,
             showToast,
             'tracking diaper changes'
@@ -295,10 +295,27 @@ export default function DiaperForm({
             // Don't close the form, let user see the error
             return;
           }
+          if (errorData) {
+            showToast({
+              variant: 'error',
+              title: 'Error',
+              message: errorData.error || t('Failed to save diaper log'),
+              duration: 5000,
+            });
+            return;
+          }
         }
 
-        // For other errors, throw as before
-        throw new Error(t('Failed to save diaper log'));
+        // Surface the server's actual error message (e.g. file too large)
+        // instead of failing silently.
+        const errorData = await response.json().catch(() => null);
+        showToast({
+          variant: 'error',
+          title: 'Error',
+          message: errorData?.error || t('Failed to save diaper log'),
+          duration: 5000,
+        });
+        return;
       }
 
       onClose();
@@ -323,6 +340,12 @@ export default function DiaperForm({
       setRemoveExistingPhoto(false);
     } catch (error) {
       console.error('Error saving diaper log:', error);
+      showToast({
+        variant: 'error',
+        title: 'Error',
+        message: 'An unexpected error occurred. Please try again.',
+        duration: 5000,
+      });
     } finally {
       setLoading(false);
     }
