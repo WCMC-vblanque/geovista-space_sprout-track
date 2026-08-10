@@ -22,6 +22,7 @@ import MilestoneForm from '@/src/components/forms/MilestoneForm';
 import MedicineForm from '@/src/components/forms/MedicineForm';
 import ActivityForm from '@/src/components/forms/ActivityForm';
 import VaccineForm from '@/src/components/forms/VaccineForm';
+import PhotoForm from '@/src/components/forms/PhotoForm';
 import { useParams } from 'next/navigation';
 import { NoBabySelected } from '@/src/components/ui/no-baby-selected';
 import ActiveFeedBanner from '@/src/components/ActiveFeedBanner';
@@ -45,12 +46,14 @@ function HomeContent(): React.ReactElement {
   const [showMedicineModal, setShowMedicineModal] = useState(false);
   const [showActivityModal, setShowActivityModal] = useState(false);
   const [showVaccineModal, setShowVaccineModal] = useState<boolean>(false);
+  const [showPhotoModal, setShowPhotoModal] = useState<boolean>(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [localTime, setLocalTime] = useState<string>('');
   const [sleepStartTime, setSleepStartTime] = useState<Record<string, Date>>({});
   const [lastSleepEndTime, setLastSleepEndTime] = useState<Record<string, Date>>({});
   const [lastFeedTime, setLastFeedTime] = useState<Record<string, Date>>({});
   const [lastDiaperTime, setLastDiaperTime] = useState<Record<string, Date>>({});
+  const [lastPhotoTime, setLastPhotoTime] = useState<Record<string, Date>>({});
   const [includeSolidsInFeedTimer, setIncludeSolidsInFeedTimer] = useState(true);
   const includeSolidsRef = useRef(true);
 
@@ -405,6 +408,9 @@ function HomeContent(): React.ReactElement {
     if (data.lastDiaperTime) {
       setLastDiaperTime(prev => ({ ...prev, [selectedBaby.id]: data.lastDiaperTime! }));
     }
+    if (data.lastPhotoTime) {
+      setLastPhotoTime(prev => ({ ...prev, [selectedBaby.id]: data.lastPhotoTime! }));
+    }
     if (data.lastSleepEndTime) {
       setLastSleepEndTime(prev => ({ ...prev, [selectedBaby.id]: data.lastSleepEndTime! }));
     }
@@ -446,6 +452,7 @@ function HomeContent(): React.ReactElement {
           lastSleepEndTime={lastSleepEndTime}
           lastFeedTime={lastFeedTime}
           lastDiaperTime={lastDiaperTime}
+          lastPhotoTime={lastPhotoTime}
           feedStartTime={feedStartTime}
           updateUnlockTimer={updateUnlockTimer}
           onSleepClick={() => setShowSleepModal(true)}
@@ -465,6 +472,7 @@ function HomeContent(): React.ReactElement {
           onMedicineClick={() => setShowMedicineModal(true)}
           onPlayClick={() => setShowActivityModal(true)}
           onVaccineClick={() => setShowVaccineModal(true)}
+          onPhotoClick={() => setShowPhotoModal(true)}
         />
       )}
 
@@ -741,6 +749,19 @@ function HomeContent(): React.ReactElement {
       <VaccineForm
         isOpen={showVaccineModal}
         onClose={() => setShowVaccineModal(false)}
+        babyId={selectedBaby?.id || ''}
+        initialTime={localTime}
+        onSuccess={() => {
+          if (selectedBaby?.id) {
+            triggerRefresh();
+          }
+        }}
+      />
+
+      {/* Photo Form */}
+      <PhotoForm
+        isOpen={showPhotoModal}
+        onClose={() => setShowPhotoModal(false)}
         babyId={selectedBaby?.id || ''}
         initialTime={localTime}
         onSuccess={() => {

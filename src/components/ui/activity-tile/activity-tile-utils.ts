@@ -21,7 +21,7 @@ export const getActivityTime = (activity: ActivityType): string => {
 /**
  * Determines the variant based on the activity type
  */
-export const getActivityVariant = (activity: ActivityType): 'sleep' | 'feed' | 'diaper' | 'note' | 'bath' | 'pump' | 'play' | 'measurement' | 'milestone' | 'medicine' | 'vaccine' | 'default' => {
+export const getActivityVariant = (activity: ActivityType): 'sleep' | 'feed' | 'diaper' | 'note' | 'bath' | 'pump' | 'play' | 'measurement' | 'milestone' | 'medicine' | 'vaccine' | 'photo' | 'default' => {
   // Check for play log before sleep (both have 'type' and 'duration' but play has 'activities')
   if ('type' in activity && 'startTime' in activity && 'activities' in activity) {
     const playTypes = ['TUMMY_TIME', 'INDOOR_PLAY', 'OUTDOOR_PLAY', 'WALK', 'CUSTOM'];
@@ -39,6 +39,7 @@ export const getActivityVariant = (activity: ActivityType): 'sleep' | 'feed' | '
   if ('vaccineName' in activity) return 'vaccine';
   if ('title' in activity && 'category' in activity) return 'milestone';
   if ('leftAmount' in activity || 'rightAmount' in activity) return 'pump';
+  if ('originalName' in activity) return 'photo';
   if ('content' in activity) return 'note';
   return 'default';
 };
@@ -204,6 +205,19 @@ export const useActivityDescription = () => {
       return {
         type: activity.category || 'Note',
         details: `${time} - ${truncatedContent}`
+      };
+    }
+
+    // Type guard for PhotoLogResponse
+    const isPhotoLog = (activity: ActivityType): activity is import('@/app/api/types').PhotoLogResponse => {
+      return 'originalName' in activity;
+    };
+
+    if (isPhotoLog(activity)) {
+      const time = formatDateTime(activity.time);
+      return {
+        type: 'Photo',
+        details: time
       };
     }
     // Type guard for BathLogResponse

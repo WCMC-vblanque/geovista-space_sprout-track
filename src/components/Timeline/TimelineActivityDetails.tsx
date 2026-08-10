@@ -10,6 +10,7 @@ import { getActivityDetails, formatTime } from './utils';
 import NoteAttachments from '@/src/components/Timeline/NoteAttachments';
 import { useLocalization } from '@/src/context/localization';
 import { useUnit } from '@/src/hooks/useUnit';
+import { PhotoThumbnail } from '@/src/components/ui/photo-thumbnail';
 
 import './timeline-activity-details.css';
 
@@ -71,6 +72,7 @@ const TimelineActivityDetails = ({
       else if ('vaccineName' in activity) onEdit(activity, 'vaccine');
       else if ('title' in activity && 'category' in activity) onEdit(activity, 'milestone');
       else if ('value' in activity && 'unit' in activity) onEdit(activity, 'measurement');
+      else if ('originalName' in activity && 'mimeType' in activity) onEdit(activity, 'photo');
     }
   };
 
@@ -96,6 +98,19 @@ const TimelineActivityDetails = ({
     >
       <FormPageContent>
         <div className="space-y-4 p-4">
+          {'originalName' in activity && (
+            <PhotoThumbnail
+              src={`/api/photo-log/file/${activity.id}`}
+              className="w-full max-h-96 object-contain rounded-lg"
+            />
+          )}
+          {'condition' in activity && (activity as any).hasPhoto && (
+            <PhotoThumbnail
+              src={`/api/diaper-log/file/${activity.id}`}
+              alt={t('Photo')}
+              className="w-full max-h-60 object-contain rounded-lg border border-gray-200 timeline-details-photo"
+            />
+          )}
           {medicineDetails ? (
             medicineDetails.map((detail, index) => (
               <div key={index} className="flex justify-between items-center">

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ActivityTile } from '@/src/components/ui/activity-tile';
 import { StatusBubble } from "@/src/components/ui/status-bubble";
-import { SleepLogResponse, FeedLogResponse, DiaperLogResponse, NoteResponse, BathLogResponse, PumpLogResponse, PlayLogResponse, MeasurementResponse, MilestoneResponse, MedicineLogResponse, VaccineLogResponse, ActivitySettings } from '@/app/api/types';
+import { SleepLogResponse, FeedLogResponse, DiaperLogResponse, NoteResponse, BathLogResponse, PumpLogResponse, PlayLogResponse, MeasurementResponse, MilestoneResponse, MedicineLogResponse, VaccineLogResponse, PhotoLogResponse, ActivitySettings } from '@/app/api/types';
 import { ArrowDownUp } from 'lucide-react';
 import { useTheme } from '@/src/context/theme';
 import { useLocalization } from '@/src/context/localization';
@@ -25,6 +25,7 @@ interface ActivityTileGroupProps {
   lastSleepEndTime: Record<string, Date>;
   lastFeedTime: Record<string, Date>;
   lastDiaperTime: Record<string, Date>;
+  lastPhotoTime?: Record<string, Date>;
   feedStartTime?: Record<string, Date>;
   updateUnlockTimer: () => void;
   onSleepClick: () => void;
@@ -38,6 +39,7 @@ interface ActivityTileGroupProps {
   onMedicineClick: () => void;
   onPlayClick?: () => void;
   onVaccineClick?: () => void;
+  onPhotoClick?: () => void;
 }
 
 /**
@@ -47,7 +49,7 @@ interface ActivityTileGroupProps {
  * and displaying status bubbles with timing information.
  */
 // Activity type definition
-type ActivityType = 'sleep' | 'feed' | 'diaper' | 'note' | 'bath' | 'pump' | 'play' | 'measurement' | 'milestone' | 'medicine' | 'vaccine';
+type ActivityType = 'sleep' | 'feed' | 'diaper' | 'note' | 'bath' | 'pump' | 'play' | 'measurement' | 'milestone' | 'medicine' | 'vaccine' | 'photo';
 
 export function ActivityTileGroup({
   selectedBaby,
@@ -57,6 +59,7 @@ export function ActivityTileGroup({
   lastSleepEndTime,
   lastFeedTime,
   lastDiaperTime,
+  lastPhotoTime = {},
   feedStartTime,
   updateUnlockTimer,
   onSleepClick,
@@ -77,7 +80,8 @@ export function ActivityTileGroup({
     }
   },
   onPlayClick = () => {},
-  onVaccineClick = () => {}
+  onVaccineClick = () => {},
+  onPhotoClick = () => {}
 }: ActivityTileGroupProps) {
   const { theme } = useTheme();
   const { t } = useLocalization();
@@ -99,7 +103,7 @@ export function ActivityTileGroup({
   if (!selectedBaby?.id) return null;
 
   // Define all activity types
-  const allActivityTypes: ActivityType[] = ['sleep', 'feed', 'diaper', 'note', 'bath', 'pump', 'play', 'measurement', 'milestone', 'medicine', 'vaccine'];
+  const allActivityTypes: ActivityType[] = ['sleep', 'feed', 'diaper', 'note', 'bath', 'pump', 'play', 'measurement', 'milestone', 'medicine', 'vaccine', 'photo'];
   
   // State for visible activities and their order
   const [visibleActivities, setVisibleActivities] = useState<Set<ActivityType>>(
@@ -262,7 +266,7 @@ export function ActivityTileGroup({
   // Function to set default settings
   const setDefaultSettings = () => {
     // Define all activity types
-    const allActivityTypes: ActivityType[] = ['sleep', 'feed', 'diaper', 'note', 'bath', 'pump', 'play', 'measurement', 'milestone', 'medicine', 'vaccine'];
+    const allActivityTypes: ActivityType[] = ['sleep', 'feed', 'diaper', 'note', 'bath', 'pump', 'play', 'measurement', 'milestone', 'medicine', 'vaccine', 'photo'];
     
     // Set default order and make all activities visible by default
     setActivityOrder([...allActivityTypes]);
@@ -280,8 +284,8 @@ export function ActivityTileGroup({
   };
   
   // Refs to store the original settings for comparison
-  const originalOrderRef = React.useRef<ActivityType[]>(['sleep', 'feed', 'diaper', 'note', 'bath', 'pump', 'play', 'measurement', 'milestone', 'medicine', 'vaccine']);
-  const originalVisibleRef = React.useRef<string[]>(['sleep', 'feed', 'diaper', 'note', 'bath', 'pump', 'play', 'measurement', 'milestone', 'medicine', 'vaccine']);
+  const originalOrderRef = React.useRef<ActivityType[]>(['sleep', 'feed', 'diaper', 'note', 'bath', 'pump', 'play', 'measurement', 'milestone', 'medicine', 'vaccine', 'photo']);
+  const originalVisibleRef = React.useRef<string[]>(['sleep', 'feed', 'diaper', 'note', 'bath', 'pump', 'play', 'measurement', 'milestone', 'medicine', 'vaccine', 'photo']);
   
   // Track if settings have been modified since loading
   const [settingsModified, setSettingsModified] = useState(false);
@@ -406,7 +410,8 @@ export function ActivityTileGroup({
     milestone: t('Milestone'),
     medicine: t('Medicine'),
     play: t('Activity'),
-    vaccine: t('Vaccines')
+    vaccine: t('Vaccines'),
+    photo: t('Photo')
   };
 
   const firstVisibleActivity = activityOrder.find(a => visibleActivities.has(a));
@@ -790,6 +795,45 @@ export function ActivityTileGroup({
             />
           </div>
         );
+      case 'photo': {
+        const isLeftmost = activity === firstVisibleActivity;
+        return (
+          <div key="photo" className="relative w-[82px] min-h-24 flex-shrink-0 snap-center">
+            <ActivityTile
+              activity={{
+                id: 'photo-button',
+                babyId: selectedBaby.id,
+                time: new Date().toISOString(),
+                originalName: '',
+                mimeType: 'image/webp',
+                fileSize: 0,
+                caretakerId: null,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                deletedAt: null
+              } as unknown as PhotoLogResponse}
+              title={t('Photo')}
+              variant="photo"
+              isButton={true}
+              onClick={() => {
+                updateUnlockTimer();
+                onPhotoClick();
+              }}
+            />
+            {selectedBaby?.id && lastPhotoTime[selectedBaby.id] && (
+              <StatusBubble
+                status="photo"
+                className={`overflow-visible ${isLeftmost ? 'z-[39]' : 'z-40'}`}
+                screenEdgeAware={isLeftmost}
+                durationInMinutes={0}
+                startTime={lastPhotoTime[selectedBaby.id].toISOString()}
+                warningTime="24:00"
+                activityType="photo"
+              />
+            )}
+          </div>
+        );
+      }
       default:
         return null;
     }

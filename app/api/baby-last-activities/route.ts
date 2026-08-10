@@ -46,7 +46,7 @@ async function handleGet(req: NextRequest, authContext: AuthResult) {
     }
     
     // Get the most recent activity of each type
-    const [lastDiaper, lastPoopDiaper, lastBath, measurements, lastNote] = await Promise.all([
+    const [lastDiaper, lastPoopDiaper, lastBath, measurements, lastNote, lastPhoto] = await Promise.all([
       prisma.diaperLog.findFirst({
         where: { 
           babyId, 
@@ -85,8 +85,17 @@ async function handleGet(req: NextRequest, authContext: AuthResult) {
         include: { caretaker: true }
       }),
       prisma.note.findFirst({
-        where: { 
-          babyId, 
+        where: {
+          babyId,
+          deletedAt: null,
+          familyId: userFamilyId,
+        },
+        orderBy: { time: 'desc' },
+        include: { caretaker: true }
+      }),
+      prisma.photoLog.findFirst({
+        where: {
+          babyId,
           deletedAt: null,
           familyId: userFamilyId,
         },
@@ -99,11 +108,15 @@ async function handleGet(req: NextRequest, authContext: AuthResult) {
     const response = {
       lastDiaper: lastDiaper ? {
         ...lastDiaper,
+        photoStoredName: undefined,
+        hasPhoto: !!lastDiaper.photoStoredName,
         time: formatForResponse(lastDiaper.time) || '',
         caretakerName: lastDiaper.caretaker?.name
       } : null,
       lastPoopDiaper: lastPoopDiaper ? {
         ...lastPoopDiaper,
+        photoStoredName: undefined,
+        hasPhoto: !!lastPoopDiaper.photoStoredName,
         time: formatForResponse(lastPoopDiaper.time) || '',
         caretakerName: lastPoopDiaper.caretaker?.name
       } : null,
@@ -121,6 +134,11 @@ async function handleGet(req: NextRequest, authContext: AuthResult) {
         ...lastNote,
         time: formatForResponse(lastNote.time) || '',
         caretakerName: lastNote.caretaker?.name
+      } : null,
+      lastPhoto: lastPhoto ? {
+        id: lastPhoto.id,
+        time: formatForResponse(lastPhoto.time) || '',
+        caretakerName: lastPhoto.caretaker?.name
       } : null
     };
     

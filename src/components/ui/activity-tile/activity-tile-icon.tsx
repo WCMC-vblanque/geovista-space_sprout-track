@@ -18,7 +18,7 @@ export function ActivityTileIcon({
   const variant = variantProp || getActivityVariant(activity);
   
   let icon = null;
-  
+
   // For buttons, always use the image icons
   if (isButton && styles.icon.defaultIcons[variant]) {
     icon = <img

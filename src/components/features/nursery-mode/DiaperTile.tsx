@@ -25,13 +25,16 @@ export function DiaperTile({ colors, log, onLog, animating, babyId, toUTCString 
     try {
       const authToken = localStorage.getItem('authToken');
       const now = toUTCString(new Date());
+      const payload = new FormData();
+      payload.append('babyId', babyId);
+      payload.append('time', now || '');
+      payload.append('type', type);
       const res = await fetch('/api/diaper-log', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
           Authorization: authToken ? `Bearer ${authToken}` : '',
         },
-        body: JSON.stringify({ babyId, time: now, type }),
+        body: payload,
       });
       const data = await res.json();
       if (data.success) {

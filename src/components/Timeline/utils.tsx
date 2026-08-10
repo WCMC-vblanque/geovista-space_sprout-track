@@ -21,7 +21,8 @@ import {
   Baby,
   Plus,
   Minus,
-  Syringe
+  Syringe,
+  Camera
 } from 'lucide-react';
 import { diaper, bottleBaby } from '@lucide/lab';
 import { 
@@ -95,6 +96,9 @@ export const getActivityIcon = (activity: ActivityType) => {
     if ('condition' in activity) {
       return <Icon iconNode={diaper} className="h-4 w-4 text-white" />; // Diaper activity
     }
+  }
+  if ('originalName' in activity) {
+    return <Camera className="h-4 w-4 text-white" />; // Photo activity
   }
   if ('content' in activity) {
     return <Edit className="h-4 w-4 text-gray-700" />; // Note activity
@@ -397,18 +401,34 @@ export const getActivityDetails = (activity: ActivityType, settings: Settings | 
           default: return t(capitalize(color));
         }
       };
+      const formatDiaperSize = (size: string) => {
+        switch (size) {
+          case 'SMALL': return t('Small');
+          case 'MEDIUM': return t('Medium');
+          case 'LARGE': return t('Large');
+          default: return t(capitalize(size));
+        }
+      };
       const details = [
         { label: t('Time'), value: formatTime(activity.time, settings, true, t) },
         { label: t('Type'), value: formatDiaperType(activity.type) },
       ];
 
-      // Only show condition and color for DIRTY or BOTH types
+      // Only show pee size for WET or BOTH types
+      if (activity.type !== 'DIRTY' && (activity as any).pumpSize) {
+        details.push({ label: t('Pee Size'), value: formatDiaperSize((activity as any).pumpSize) });
+      }
+
+      // Only show condition, color and poo size for DIRTY or BOTH types
       if (activity.type !== 'WET') {
         if (activity.condition) {
           details.push({ label: t('Condition'), value: formatDiaperCondition(activity.condition) });
         }
         if (activity.color) {
           details.push({ label: t('Color'), value: formatDiaperColor(activity.color) });
+        }
+        if ((activity as any).poopSize) {
+          details.push({ label: t('Poo Size'), value: formatDiaperSize((activity as any).poopSize) });
         }
       }
 
@@ -426,13 +446,22 @@ export const getActivityDetails = (activity: ActivityType, settings: Settings | 
       };
     }
   }
+  if ('originalName' in activity) {
+    const photoDetails = [
+      { label: t('Time'), value: formatTime((activity as any).time, settings, true, t) },
+    ];
+    return {
+      title: t('Daily Photo'),
+      details: [...photoDetails, ...caretakerDetail],
+    };
+  }
   if ('content' in activity) {
     const noteDetails = [
       { label: t('Time'), value: formatTime(activity.time, settings, true, t) },
       { label: t('Content'), value: activity.content },
       { label: t('Category'), value: activity.category || t('Not specified') },
     ];
-    
+
     return {
       title: t('Note'),
       details: [...noteDetails, ...caretakerDetail],
@@ -837,6 +866,13 @@ export const getActivityDescription = (activity: ActivityType, settings: Setting
       };
     }
   }
+  if ('originalName' in activity) {
+    const time = formatTime((activity as any).time, settings, true, t);
+    return {
+      type: t('Daily Photo'),
+      details: time
+    };
+  }
   if ('content' in activity) {
     const time = formatTime(activity.time, settings, true, t);
     const content = activity.content.length > 50 ? activity.content.slice(0, 50) + '...' : activity.content;
@@ -1020,6 +1056,7 @@ export const getActivityEndpoint = (activity: ActivityType): string => {
   if ('vaccineName' in activity) return 'vaccine-log';
   if ('title' in activity && 'category' in activity) return 'milestone-log';
   if ('value' in activity && 'unit' in activity) return 'measurement-log';
+  if ('originalName' in activity) return 'photo-log';
   
   // Log the activity for debugging
   console.log('Activity type not identified:', activity);
@@ -1084,6 +1121,9 @@ export const getActivityStyle = (activity: ActivityType): ActivityStyle => {
   }
   if ('vaccineName' in activity) {
     return { bg: 'bg-white border-2 border-red-500', textColor: 'text-red-600' };
+  }
+  if ('originalName' in activity) {
+    return { bg: 'bg-gradient-to-r from-cyan-500 to-cyan-600', textColor: 'text-white' };
   }
   if ('title' in activity && 'category' in activity) {
     return {

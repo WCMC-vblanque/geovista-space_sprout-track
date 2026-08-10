@@ -1,7 +1,7 @@
 import { ReactElement } from 'react';
 import { Icon as LucideIcon } from 'lucide-react';
 
-export type StatusType = 'sleeping' | 'awake' | 'feed' | 'feedActive' | 'diaper';
+export type StatusType = 'sleeping' | 'awake' | 'feed' | 'feedActive' | 'diaper' | 'photo';
 
 export interface StatusBubbleProps {
   /** Current status of the baby */
@@ -15,7 +15,7 @@ export interface StatusBubbleProps {
   /** Dynamically reposition bubble if it would clip the left screen edge */
   screenEdgeAware?: boolean;
   /** Type of activity this status bubble is for (used to filter relevant activities) */
-  activityType?: 'sleep' | 'feed' | 'diaper' | 'pump';
+  activityType?: 'sleep' | 'feed' | 'diaper' | 'pump' | 'photo';
 }
 
 export interface StatusStyle {

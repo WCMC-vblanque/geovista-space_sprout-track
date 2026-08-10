@@ -1,5 +1,5 @@
 import React, { useEffect, useLayoutEffect, useRef, useState, useCallback } from 'react';
-import { Moon, Sun, Icon } from 'lucide-react';
+import { Moon, Sun, Icon, Camera } from 'lucide-react';
 import { diaper, bottleBaby } from '@lucide/lab';
 import { cn } from "@/src/lib/utils";
 import { statusBubbleStyles as styles } from './status-bubble.styles';
@@ -61,11 +61,12 @@ export function StatusBubble({
         // Only calculate duration if this is the correct activity type
         // This ensures that "awake" status only considers sleep activities
         // and isn't affected by other activities like pumping
-        if (!activityType || 
-            (status === 'sleeping' && activityType === 'sleep') || 
+        if (!activityType ||
+            (status === 'sleeping' && activityType === 'sleep') ||
             (status === 'awake' && activityType === 'sleep') ||
             (status === 'feed' && activityType === 'feed') ||
-            (status === 'diaper' && activityType === 'diaper')) {
+            (status === 'diaper' && activityType === 'diaper') ||
+            (status === 'photo' && activityType === 'photo')) {
           const diffMinutes = calculateDurationMinutes(startTime, now.toISOString());
           setCalculatedDuration(diffMinutes);
         }
@@ -134,6 +135,11 @@ export function StatusBubble({
         return {
           bgColor: isWarning ? styles.statusStyles.diaper.warning : styles.statusStyles.diaper.normal,
           icon: <Icon iconNode={diaper} className={styles.icon} />
+        };
+      case 'photo':
+        return {
+          bgColor: isWarning ? styles.statusStyles.photo.warning : styles.statusStyles.photo.normal,
+          icon: <Camera className={styles.icon} />
         };
       default:
         return {

@@ -62,6 +62,9 @@ const TABLE_IMPORT_ORDER = [
   'VaccineLog',
   'VaccineDocument',
 
+  // Photos
+  'PhotoLog',
+
   // Junction tables
   'BabyEvent',
   'CaretakerEvent',
@@ -131,6 +134,7 @@ const DATE_COLUMNS: Record<string, string[]> = {
   MedicineLog: ['time', 'createdAt', 'updatedAt', 'deletedAt'],
   VaccineLog: ['time', 'createdAt', 'updatedAt', 'deletedAt'],
   VaccineDocument: ['createdAt', 'updatedAt'],
+  PhotoLog: ['time', 'createdAt', 'updatedAt', 'deletedAt'],
   FamilySetup: ['expiresAt', 'createdAt', 'updatedAt'],
   BetaSubscriber: ['optedOutAt', 'createdAt', 'updatedAt', 'deletedAt'],
   BetaCampaign: ['scheduledAt', 'sentAt', 'createdAt', 'updatedAt', 'deletedAt'],

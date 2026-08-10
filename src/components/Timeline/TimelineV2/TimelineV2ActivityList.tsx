@@ -8,6 +8,7 @@ import { useLocalization } from '@/src/context/localization';
 import { useTimezone } from '@/app/context/timezone';
 import { formatTimeDisplay, formatDateShort } from '@/src/utils/dateFormat';
 import { useUnit } from '@/src/hooks/useUnit';
+import { PhotoThumbnail } from '@/src/components/ui/photo-thumbnail';
 
 import '../timeline-activity-list.css';
 
@@ -218,6 +219,7 @@ const TimelineV2ActivityList = ({
                           else if ('content' in activity) activityTypeClass = 'note';
                           else if ('soapUsed' in activity) activityTypeClass = 'bath';
                           else if ('vaccineName' in activity) activityTypeClass = 'vaccine';
+                          else if ('originalName' in activity) activityTypeClass = 'photo';
                           else if ('title' in activity && 'category' in activity) activityTypeClass = 'milestone';
                           else if ('value' in activity && 'unit' in activity) activityTypeClass = 'measurement';
                           else if ('doseAmount' in activity && 'medicineId' in activity) {
@@ -248,10 +250,26 @@ const TimelineV2ActivityList = ({
                               } as React.CSSProperties & { '--activity-color': string }}
                             >
                               {/* Event Icon */}
-                              <div className={`flex-shrink-0 event-icon ${activityTypeClass}`}>
-                                {getActivityIcon(activity)}
-                              </div>
-                              
+                              {'originalName' in activity ? (
+                                <PhotoThumbnail
+                                  src={`/api/photo-log/file/${activity.id}`}
+                                  className="flex-shrink-0 w-8 h-8 rounded-lg object-cover event-icon photo"
+                                />
+                              ) : (
+                                <div className={`flex-shrink-0 event-icon ${activityTypeClass}`}>
+                                  {getActivityIcon(activity)}
+                                </div>
+                              )}
+
+                              {/* Diaper Photo Thumbnail */}
+                              {'condition' in activity && (activity as any).hasPhoto && (
+                                <PhotoThumbnail
+                                  src={`/api/diaper-log/file/${activity.id}`}
+                                  alt={t('Photo')}
+                                  className="flex-shrink-0 w-8 h-8 object-cover rounded-md border border-gray-200 event-thumbnail"
+                                />
+                              )}
+
                               {/* Event Content */}
                               <div className="flex-1 min-w-0 event-content">
                                 <Label className="text-sm font-semibold text-gray-900 mb-0.5 event-title">
@@ -391,6 +409,10 @@ const TimelineV2ActivityList = ({
                                       return details.join(' • ');
                                     }
                                     
+                                    if ('originalName' in activity) {
+                                      return t('Daily Photo');
+                                    }
+
                                     if ('vaccineName' in activity) {
                                       const parts = [(activity as any).vaccineName];
                                       if ((activity as any).doseNumber) parts.push(`${t('Dose')} #${(activity as any).doseNumber}`);

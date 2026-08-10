@@ -1,9 +1,9 @@
 import { ReactNode } from 'react';
-import { SleepLogResponse, FeedLogResponse, DiaperLogResponse, MoodLogResponse, NoteResponse, BathLogResponse, PumpLogResponse, PlayLogResponse, MeasurementResponse, MilestoneResponse, MedicineLogResponse, VaccineLogResponse } from '@/app/api/types';
+import { SleepLogResponse, FeedLogResponse, DiaperLogResponse, MoodLogResponse, NoteResponse, BathLogResponse, PumpLogResponse, PlayLogResponse, MeasurementResponse, MilestoneResponse, MedicineLogResponse, VaccineLogResponse, PhotoLogResponse } from '@/app/api/types';
 
-export type ActivityType = SleepLogResponse | FeedLogResponse | DiaperLogResponse | MoodLogResponse | NoteResponse | BathLogResponse | PumpLogResponse | PlayLogResponse | MeasurementResponse | MilestoneResponse | MedicineLogResponse | VaccineLogResponse;
+export type ActivityType = SleepLogResponse | FeedLogResponse | DiaperLogResponse | MoodLogResponse | NoteResponse | BathLogResponse | PumpLogResponse | PlayLogResponse | MeasurementResponse | MilestoneResponse | MedicineLogResponse | VaccineLogResponse | PhotoLogResponse;
 
-export type ActivityTileVariant = 'sleep' | 'feed' | 'diaper' | 'note' | 'bath' | 'pump' | 'play' | 'measurement' | 'milestone' | 'medicine' | 'vaccine' | 'default';
+export type ActivityTileVariant = 'sleep' | 'feed' | 'diaper' | 'note' | 'bath' | 'pump' | 'play' | 'measurement' | 'milestone' | 'medicine' | 'vaccine' | 'photo' | 'default';
 
 export interface ActivityTileProps {
   /**

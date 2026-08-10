@@ -20,6 +20,10 @@ export const statusBubbleStyles = {
       normal: "bg-green-500 text-white",
       warning: "bg-red-500 text-white",
     },
+    photo: {
+      normal: "bg-green-500 text-white",
+      warning: "bg-red-500 text-white",
+    },
     default: {
       bgColor: "bg-gray-500 text-white",
     }

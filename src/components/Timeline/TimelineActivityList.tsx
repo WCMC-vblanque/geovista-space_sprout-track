@@ -3,6 +3,7 @@ import { Baby as BabyIcon } from 'lucide-react';
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { ActivityType, TimelineActivityListProps, FilterType } from './types';
 import { getActivityIcon, getActivityStyle, getActivityDescription, getActivityTime } from './utils';
+import { PhotoThumbnail } from '@/src/components/ui/photo-thumbnail';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '@/src/context/theme';
 import { useLocalization } from '@/src/context/localization';
@@ -56,6 +57,8 @@ const TimelineActivityList = ({
           return 'title' in activity && 'category' in activity;
         case 'measurement':
           return 'value' in activity && 'unit' in activity;
+        case 'photo':
+          return 'originalName' in activity;
         default:
           return true;
       }
@@ -410,10 +413,26 @@ const TimelineActivityList = ({
                                 <CardContent className="p-4">
                                   <div className="flex items-center space-x-3">
                                     {/* Activity Icon */}
-                                    <div className={`flex-shrink-0 ${style.bg} p-2 rounded-xl shadow-sm`}>
-                                      {getActivityIcon(activity)}
-                                    </div>
-                                    
+                                    {'originalName' in activity ? (
+                                      <PhotoThumbnail
+                                        src={`/api/photo-log/file/${activity.id}`}
+                                        className="flex-shrink-0 w-10 h-10 rounded-xl object-cover shadow-sm"
+                                      />
+                                    ) : (
+                                      <div className={`flex-shrink-0 ${style.bg} p-2 rounded-xl shadow-sm`}>
+                                        {getActivityIcon(activity)}
+                                      </div>
+                                    )}
+
+                                    {/* Diaper Photo Thumbnail */}
+                                    {'condition' in activity && (activity as any).hasPhoto && (
+                                      <PhotoThumbnail
+                                        src={`/api/diaper-log/file/${activity.id}`}
+                                        alt={t('Photo')}
+                                        className="flex-shrink-0 w-10 h-10 object-cover rounded-lg border border-gray-200 timeline-activity-thumbnail"
+                                      />
+                                    )}
+
                                     {/* Activity Content */}
                                     <div className="flex-1 min-w-0" onClick={() => {
                                       // Add a small delay to allow the click animation to be visible
@@ -540,6 +559,10 @@ const TimelineActivityList = ({
                                             return `${activity.value} ${unit}`;
                                           }
                                           
+                                          if ('originalName' in activity) {
+                                            return t('Daily Photo');
+                                          }
+
                                           if ('doseAmount' in activity && 'medicineId' in activity) {
                                             // Medicine activity
                                             const unit = unitSymbol(activity.unitAbbr);
