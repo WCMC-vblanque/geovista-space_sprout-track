@@ -8,7 +8,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '@/src/context/theme';
 import { useLocalization } from '@/src/context/localization';
 import { useUnit } from '@/src/hooks/useUnit';
-import { PhotoThumbnail } from '@/src/components/ui/photo-thumbnail';
 
 import './timeline-activity-list.css';
 

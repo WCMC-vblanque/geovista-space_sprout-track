@@ -7,7 +7,6 @@ import styles from './full-log-timeline.styles';
 import { getActivityIcon, getActivityStyle, getActivityDescription } from '@/src/components/Timeline/utils';
 import { PhotoThumbnail } from '@/src/components/ui/photo-thumbnail';
 import { useLocalization } from '@/src/context/localization';
-import { PhotoThumbnail } from '@/src/components/ui/photo-thumbnail';
 
 /**
  * FullLogActivityList Component
