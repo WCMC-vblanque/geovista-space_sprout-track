@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { useRouter, usePathname, useParams } from 'next/navigation';
 import { BabyProvider, useBaby } from '../../context/baby';
 
@@ -16,6 +16,34 @@ import SettingsForm from '@/src/components/forms/SettingsForm';
 import { DebugSessionTimer } from '@/src/components/debugSessionTimer';
 import { TimezoneDebug } from '@/src/components/debugTimezone';
 import { SideNav, SideNavTrigger } from '@/src/components/ui/side-nav';
+import { CommandPalette } from '@/src/components/ui/command-palette';
+import { CommandItem } from '@/src/components/ui/command-palette/command-palette.types';
+import { supportedLanguages } from '@/src/localization/supported-languages-config';
+import { useTheme } from '@/src/context/theme';
+import {
+  Search,
+  NotebookPen,
+  ScrollText,
+  CalendarDays,
+  BarChart3,
+  Moon,
+  Settings as SettingsIcon,
+  Baby as BabyIcon,
+  SunMoon,
+  Languages,
+  LogOut,
+  Utensils,
+  Droplets,
+  BedDouble,
+  Milk,
+  Pill,
+  Ruler,
+  StickyNote,
+  Bath,
+  Blocks,
+  Star,
+  Syringe,
+} from 'lucide-react';
 import { Inter as FontSans } from 'next/font/google';
 import { cn } from '@/src/lib/utils';
 import { Baby } from '@prisma/client';
@@ -55,8 +83,10 @@ function AppContent({ children }: { children: React.ReactNode }) {
   const { family } = useFamily();
   const { selectedBaby, setSelectedBaby, sleepingBabies } = useBaby();
   const { isSaasMode, notificationsEnabled } = useDeployment();
-  const { t } = useLocalization();
+  const { t, setLanguage } = useLocalization();
+  const { toggleTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const [commandOpen, setCommandOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [quickStatsOpen, setQuickStatsOpen] = useState(false);
   const [sideNavOpen, setSideNavOpen] = useState(false);
@@ -754,6 +784,70 @@ function AppContent({ children }: { children: React.ReactNode }) {
     return () => clearInterval(interval);
   }, []);
 
+  // Global keyboard shortcut to toggle the command palette (Ctrl/Cmd + K)
+  useEffect(() => {
+    const handleShortcut = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setCommandOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleShortcut);
+    return () => window.removeEventListener('keydown', handleShortcut);
+  }, []);
+
+  // Commands available in the command palette ("superbuscador").
+  const commands = useMemo<CommandItem[]>(() => {
+    const go = (path: string) => () => router.push(`/${familySlug}${path}`);
+    const quickLog = t('Quick Log');
+    const nav = t('Navigation');
+    const actions = t('Actions');
+    const langGroup = t('Language');
+
+    const items: CommandItem[] = [
+      // Quick Log — opens the matching log form pre-selected to the right type.
+      // Ordered by how often caregivers use each action (most frequent first).
+      { id: 'log-feed-breast', label: t('Log feeding — Breast'), keywords: 'feed breast pecho teta lactancia alimentar alimentacion ali pecho allaitement sein', group: quickLog, icon: Utensils, action: go('/log-entry?log=feed-breast') },
+      { id: 'log-feed-bottle', label: t('Log feeding — Bottle'), keywords: 'feed bottle biberon mamadera formula alimentar ali bibe', group: quickLog, icon: Utensils, action: go('/log-entry?log=feed-bottle') },
+      { id: 'log-feed-solids', label: t('Log feeding — Solids'), keywords: 'feed solids solidos comida papilla ali sol nourriture solide', group: quickLog, icon: Utensils, action: go('/log-entry?log=feed-solids') },
+      { id: 'log-diaper', label: t('Log diaper'), keywords: 'diaper pañal cambio caca pis couche', group: quickLog, icon: Droplets, action: go('/log-entry?log=diaper') },
+      { id: 'log-sleep', label: t('Log sleep'), keywords: 'sleep dormir sueño siesta nap acostar sommeil dodo', group: quickLog, icon: BedDouble, action: go('/log-entry?log=sleep') },
+      { id: 'log-pump', label: t('Log pumping'), keywords: 'pump pumping extraccion sacaleche extractor bomba leche tire-lait', group: quickLog, icon: Milk, action: go('/log-entry?log=pump') },
+      { id: 'log-medicine', label: t('Log medicine'), keywords: 'medicine medicina medicamento jarabe dose dosis medicament remedio', group: quickLog, icon: Pill, action: go('/log-entry?log=medicine') },
+      { id: 'log-measurement', label: t('Log measurement'), keywords: 'measurement medicion peso talla altura weight height growth mesure mensuracion', group: quickLog, icon: Ruler, action: go('/log-entry?log=measurement') },
+      { id: 'log-bath', label: t('Log bath'), keywords: 'bath baño bano banar bain ducha shower', group: quickLog, icon: Bath, action: go('/log-entry?log=bath') },
+      { id: 'log-note', label: t('Log note'), keywords: 'note nota apunte comentario remarque comment', group: quickLog, icon: StickyNote, action: go('/log-entry?log=note') },
+      { id: 'log-activity', label: t('Log activity'), keywords: 'activity actividad juego play tummy time jugar activite', group: quickLog, icon: Blocks, action: go('/log-entry?log=activity') },
+      { id: 'log-milestone', label: t('Log milestone'), keywords: 'milestone hito logro etapa desarrollo jalon etape', group: quickLog, icon: Star, action: go('/log-entry?log=milestone') },
+      { id: 'log-vaccine', label: t('Log vaccine'), keywords: 'vaccine vacuna inmunizacion vacunacion vaccin immunization shot', group: quickLog, icon: Syringe, action: go('/log-entry?log=vaccine') },
+      // Navigation
+      { id: 'log-entry', label: t('Log Entry'), keywords: 'log entry registro entrada saisie diaper feed sleep pañal toma sueño', group: nav, icon: NotebookPen, action: go('/log-entry') },
+      { id: 'full-log', label: t('Full Log'), keywords: 'full log history historial journal complet activity', group: nav, icon: ScrollText, action: go('/full-log') },
+      { id: 'calendar', label: t('Calendar'), keywords: 'calendar calendario calendrier events eventos', group: nav, icon: CalendarDays, action: go('/calendar') },
+      { id: 'reports', label: t('Reports'), keywords: 'reports reportes rapports charts growth graficas', group: nav, icon: BarChart3, action: go('/reports') },
+      { id: 'nursery-mode', label: t('Nursery Mode'), keywords: 'nursery mode modo guarderia mode creche night', group: nav, icon: Moon, action: go('/nursery-mode') },
+      // Actions
+      { id: 'settings', label: t('Settings'), keywords: 'settings ajustes configuracion parametres preferences', group: actions, icon: SettingsIcon, action: () => setSettingsOpen(true) },
+      { id: 'baby-info', label: t('Baby Quick Info'), keywords: 'baby info bebe stats estadisticas infos quick', group: actions, icon: BabyIcon, action: () => setQuickStatsOpen(true) },
+      { id: 'theme', label: t('Toggle Light/Dark Theme'), keywords: 'theme dark light tema oscuro claro sombre clair mode', group: actions, icon: SunMoon, action: () => toggleTheme() },
+      { id: 'logout', label: t('Logout'), keywords: 'logout sign out cerrar sesion deconnexion exit', group: actions, icon: LogOut, action: () => handleLogout() },
+    ];
+
+    // Language switching
+    for (const lang of supportedLanguages) {
+      items.push({
+        id: `lang-${lang.code}`,
+        label: `${t('Language')}: ${lang.name}`,
+        keywords: `language idioma langue ${lang.name} ${lang.code} ${lang.abbreviation}`,
+        group: langGroup,
+        icon: Languages,
+        action: () => { void setLanguage(lang.code); },
+      });
+    }
+
+    return items;
+  }, [t, familySlug, router, setLanguage, toggleTheme, handleLogout]);
+
   if (!mounted) return null;
 
   // Helper function to add family slug to paths
@@ -857,7 +951,15 @@ function AppContent({ children }: { children: React.ReactNode }) {
                       </span>
                     </div>
                   </div>
-                  <div className="flex items-center mr-4 sm:mr-6 lg:mr-8">
+                  <div className="flex items-center gap-2 mr-4 sm:mr-6 lg:mr-8">
+                    <button
+                      onClick={() => setCommandOpen(true)}
+                      className="flex items-center justify-center h-9 w-9 rounded-full text-white/90 hover:bg-white/15 transition-colors cursor-pointer"
+                      aria-label={t('Search features')}
+                      title={t('Search features')}
+                    >
+                      <Search className="h-5 w-5" />
+                    </button>
                     {babies.length > 0 && (
                       <BabySelector
                         selectedBaby={selectedBaby}
@@ -911,6 +1013,13 @@ function AppContent({ children }: { children: React.ReactNode }) {
           {children}
         </div>
       )}
+
+      {/* Command Palette ("superbuscador") - opens with Ctrl/Cmd+K or the search button */}
+      <CommandPalette
+        open={commandOpen}
+        onOpenChange={setCommandOpen}
+        commands={commands}
+      />
 
       <SettingsForm
         isOpen={settingsOpen}

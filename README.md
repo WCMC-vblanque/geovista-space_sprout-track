@@ -194,7 +194,7 @@ See [Initial Setup](documentation/Admin-Documentation/initial-setup.md) for deta
 | [Webhook API](documentation/Admin-Documentation/webhook-api.md) | External integrations (Home Assistant, Grafana, NFC, etc.) |
 | [API Logging](documentation/Admin-Documentation/api-logging.md) | Optional request/response logging |
 | [Admin Password Reset](documentation/Admin-Documentation/admin-password-reset.md) | Automatic reset when upgrading from older versions |
-| [User Manual](documentation/User-Documentation/README.md) | Hand-written end-user guides for using the app |
+| [User Manual](documentation/User-Documentation/README.md) | Hand-written end-user guides for using the app (e.g. Quick Search) |
 
 ## Tech Stack
 

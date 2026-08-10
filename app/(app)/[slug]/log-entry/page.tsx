@@ -23,7 +23,8 @@ import MedicineForm from '@/src/components/forms/MedicineForm';
 import ActivityForm from '@/src/components/forms/ActivityForm';
 import VaccineForm from '@/src/components/forms/VaccineForm';
 import PhotoForm from '@/src/components/forms/PhotoForm';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams, useRouter, usePathname } from 'next/navigation';
+import { FeedType } from '@prisma/client';
 import { NoBabySelected } from '@/src/components/ui/no-baby-selected';
 import ActiveFeedBanner from '@/src/components/ActiveFeedBanner';
 import ActiveActivityBanner from '@/src/components/ActiveActivityBanner';
@@ -33,10 +34,14 @@ function HomeContent(): React.ReactElement {
   const { family } = useFamily();
   const { t } = useLocalization();
   const params = useParams();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
   const familySlug = params?.slug as string;
-  
+
   const [showSleepModal, setShowSleepModal] = useState(false);
   const [showFeedModal, setShowFeedModal] = useState(false);
+  const [feedInitialType, setFeedInitialType] = useState<FeedType | undefined>(undefined);
   const [showDiaperModal, setShowDiaperModal] = useState(false);
   const [showNoteModal, setShowNoteModal] = useState(false);
   const [showBathModal, setShowBathModal] = useState(false);
@@ -56,6 +61,32 @@ function HomeContent(): React.ReactElement {
   const [lastPhotoTime, setLastPhotoTime] = useState<Record<string, Date>>({});
   const [includeSolidsInFeedTimer, setIncludeSolidsInFeedTimer] = useState(true);
   const includeSolidsRef = useRef(true);
+
+  // Open a log form directly when requested via the command palette (?log=...)
+  useEffect(() => {
+    const logParam = searchParams?.get('log');
+    if (!logParam) return;
+
+    switch (logParam) {
+      case 'sleep': setShowSleepModal(true); break;
+      case 'diaper': setShowDiaperModal(true); break;
+      case 'feed-breast': setFeedInitialType('BREAST'); setShowFeedModal(true); break;
+      case 'feed-bottle': setFeedInitialType('BOTTLE'); setShowFeedModal(true); break;
+      case 'feed-solids': setFeedInitialType('SOLIDS'); setShowFeedModal(true); break;
+      case 'pump': setShowPumpModal(true); break;
+      case 'medicine': setShowMedicineModal(true); break;
+      case 'measurement': setShowMeasurementModal(true); break;
+      case 'bath': setShowBathModal(true); break;
+      case 'note': setShowNoteModal(true); break;
+      case 'activity': setShowActivityModal(true); break;
+      case 'milestone': setShowMilestoneModal(true); break;
+      case 'vaccine': setShowVaccineModal(true); break;
+      case 'photo': setShowPhotoModal(true); break;
+    }
+
+    // Clear the param so a refresh or back-navigation doesn't reopen the form
+    router.replace(pathname, { scroll: false });
+  }, [searchParams, pathname, router]);
 
   // Fetch family settings for feed timer configuration
   useEffect(() => {
@@ -596,9 +627,11 @@ function HomeContent(): React.ReactElement {
         isOpen={showFeedModal}
         onClose={() => {
           setShowFeedModal(false);
+          setFeedInitialType(undefined);
         }}
         babyId={selectedBaby?.id || ''}
         initialTime={localTime}
+        initialType={feedInitialType}
         isFeeding={selectedBaby?.id ? feedingBabies.has(selectedBaby.id) : false}
         activeFeedData={activeFeedData}
         onFeedToggle={() => {

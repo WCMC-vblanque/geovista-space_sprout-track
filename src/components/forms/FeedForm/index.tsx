@@ -29,6 +29,8 @@ interface FeedFormProps {
   onClose: () => void;
   babyId: string | undefined;
   initialTime: string;
+  /** Pre-select the feed type when opening a new entry (e.g. from the command palette). */
+  initialType?: FeedType;
   activity?: FeedLogResponse;
   onSuccess?: () => void;
   isFeeding?: boolean;
@@ -44,6 +46,7 @@ export default function FeedForm({
   onClose,
   babyId,
   initialTime,
+  initialType,
   activity,
   onSuccess,
   isFeeding = false,
@@ -387,8 +390,13 @@ export default function FeedForm({
         // Store the initial time used for new entry
         setInitializedTime(initialTime);
 
-        // Fetch the last feed type to pre-populate the form
-        fetchLastFeedType();
+        if (initialType) {
+          // Explicit type requested (e.g. from the command palette) — honor it
+          setFormData(prev => ({ ...prev, type: initialType }));
+        } else {
+          // Fetch the last feed type to pre-populate the form
+          fetchLastFeedType();
+        }
       }
       
       // Mark as initialized
@@ -398,7 +406,7 @@ export default function FeedForm({
       setIsInitialized(false);
       setInitializedTime(null);
     }
-  }, [isOpen, activity, initialTime]);
+  }, [isOpen, activity, initialTime, initialType]);
 
   useEffect(() => {
     if (formData.type === 'BOTTLE' || formData.type === 'SOLIDS') {
