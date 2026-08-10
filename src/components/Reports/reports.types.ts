@@ -310,6 +310,7 @@ export interface FeedingStats {
     count: number;
     leftMinutes: number;
     rightMinutes: number;
+    totalMinutes: number;
     leftCount: number;
     rightCount: number;
     avgLeftMinutes: number;
