@@ -8,7 +8,8 @@ import { Input } from '@/src/components/ui/input';
 import { DateTimePicker } from '@/src/components/ui/date-time-picker';
 import { Checkbox } from '@/src/components/ui/checkbox';
 import { Label } from '@/src/components/ui/label';
-import { Camera, Image as ImageIcon, X } from 'lucide-react';
+import { Camera, Image as ImageIcon, X, Droplet } from 'lucide-react';
+import { cn } from '@/src/lib/utils';
 import {
   Select,
   SelectContent,
@@ -27,6 +28,14 @@ import { handleExpirationError } from '@/src/lib/expiration-error-handler';
 import { useParams } from 'next/navigation';
 import { useLocalization } from '@/src/context/localization';
 import { PhotoThumbnail } from '@/src/components/ui/photo-thumbnail';
+
+// Icon size (px) and tap-target size (px) per DiaperSize tier, shared by
+// the pee and poo pickers so "small/medium/large" reads consistently.
+const SIZE_TIERS: { value: DiaperSize; icon: number; target: number }[] = [
+  { value: 'SMALL', icon: 16, target: 36 },
+  { value: 'MEDIUM', icon: 24, target: 44 },
+  { value: 'LARGE', icon: 32, target: 52 },
+];
 
 interface DiaperFormProps {
   isOpen: boolean;
@@ -67,7 +76,6 @@ export default function DiaperForm({
   });
   const [formData, setFormData] = useState({
     time: initialTime,
-    type: '' as DiaperType | '',
     condition: '',
     color: '',
     blowout: false,
@@ -159,7 +167,6 @@ export default function DiaperForm({
 
         setFormData({
           time: formattedTime,
-          type: activity.type,
           condition: activity.condition || '',
           color: activity.color || '',
           blowout: activity.blowout || false,
@@ -210,13 +217,29 @@ export default function DiaperForm({
     }
   }, [isOpen, activity, initialTime]);
 
+  // Wet/Dirty/Both is inferred from which size(s) are picked. Falls back to
+  // the original type when editing a pre-existing entry that has no size
+  // recorded yet (older diaper logs, from before size tracking existed),
+  // so fixing e.g. just the time doesn't force picking a size.
+  const inferredType: DiaperType | null = formData.pumpSize && formData.poopSize
+    ? 'BOTH'
+    : formData.pumpSize
+    ? 'WET'
+    : formData.poopSize
+    ? 'DIRTY'
+    : activity?.type ?? null;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!babyId) return;
 
-    // Validate required fields
-    if (!formData.type) {
-      console.error('Required fields missing: type');
+    if (!inferredType) {
+      showToast({
+        variant: 'error',
+        title: 'Error',
+        message: t('Please select a pee size, poo size, or both'),
+        duration: 5000,
+      });
       return;
     }
 
@@ -236,7 +259,7 @@ export default function DiaperForm({
       const payload = new FormData();
       payload.append('babyId', babyId);
       payload.append('time', utcTimeString || '');
-      payload.append('type', formData.type);
+      payload.append('type', inferredType);
       if (formData.condition) payload.append('condition', formData.condition);
       if (formData.color) payload.append('color', formData.color);
       payload.append('blowout', formData.blowout ? 'true' : 'false');
@@ -285,7 +308,6 @@ export default function DiaperForm({
       setSelectedDateTime(new Date(initialTime));
       setFormData({
         time: initialTime,
-        type: '' as DiaperType | '',
         condition: '',
         color: '',
         blowout: false,
@@ -327,29 +349,62 @@ export default function DiaperForm({
               />
             </div>
 
-            {/* Type Selection - Full width on all screens */}
-            <div>
-              <label className="form-label">{t('Type')}</label>
-              <Select
-                value={formData.type || ''}
-                onValueChange={(value: DiaperType) =>
-                  setFormData({ ...formData, type: value })
-                }
-                disabled={loading}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder={t("Select type")} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="WET">{t('Wet')}</SelectItem>
-                  <SelectItem value="DIRTY">{t('Dirty')}</SelectItem>
-                  <SelectItem value="BOTH">{t('Wet and Dirty')}</SelectItem>
-                </SelectContent>
-              </Select>
+            {/* Pee / Poo size pickers - two columns, tap an icon to select its
+                size; tap the same one again to clear it. Leaving a side
+                empty means that side didn't happen (no pee / no poo). */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="form-label">{t('Pee Size')}</label>
+                <div className="flex items-end justify-center gap-2 p-3 border rounded-lg">
+                  {SIZE_TIERS.map(({ value, icon, target }) => (
+                    <button
+                      key={value}
+                      type="button"
+                      disabled={loading}
+                      onClick={() =>
+                        setFormData({ ...formData, pumpSize: formData.pumpSize === value ? '' : value })
+                      }
+                      aria-pressed={formData.pumpSize === value}
+                      aria-label={t(value === 'SMALL' ? 'Small' : value === 'MEDIUM' ? 'Medium' : 'Large')}
+                      className={cn(
+                        "flex items-center justify-center rounded-full transition-colors",
+                        formData.pumpSize === value ? "bg-blue-100 ring-2 ring-blue-500" : "hover:bg-gray-100"
+                      )}
+                      style={{ width: target, height: target }}
+                    >
+                      <Droplet style={{ width: icon, height: icon }} className="text-blue-500" />
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <label className="form-label">{t('Poo Size')}</label>
+                <div className="flex items-end justify-center gap-2 p-3 border rounded-lg">
+                  {SIZE_TIERS.map(({ value, icon, target }) => (
+                    <button
+                      key={value}
+                      type="button"
+                      disabled={loading}
+                      onClick={() =>
+                        setFormData({ ...formData, poopSize: formData.poopSize === value ? '' : value })
+                      }
+                      aria-pressed={formData.poopSize === value}
+                      aria-label={t(value === 'SMALL' ? 'Small' : value === 'MEDIUM' ? 'Medium' : 'Large')}
+                      className={cn(
+                        "flex items-center justify-center rounded-full transition-colors",
+                        formData.poopSize === value ? "bg-amber-100 ring-2 ring-amber-500" : "hover:bg-gray-100"
+                      )}
+                      style={{ width: target, height: target }}
+                    >
+                      <span style={{ fontSize: icon }} role="img" aria-hidden="true">💩</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
 
-            {/* Blowout/Leakage checkbox - visible for all diaper types */}
-            {formData.type && (
+            {/* Blowout/Leakage checkbox - visible once a pee or poo size is picked */}
+            {(formData.pumpSize || formData.poopSize) && (
               <>
                 <label className="flex items-center space-x-2 cursor-pointer">
                   <Checkbox
@@ -376,29 +431,7 @@ export default function DiaperForm({
               </>
             )}
 
-            {(formData.type === 'WET' || formData.type === 'BOTH') && (
-              <div>
-                <label className="form-label">{t('Pee Size')}</label>
-                <Select
-                  value={formData.pumpSize}
-                  onValueChange={(value: DiaperSize) =>
-                    setFormData({ ...formData, pumpSize: value })
-                  }
-                  disabled={loading}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder={t("Select size")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="SMALL">{t('Small')}</SelectItem>
-                    <SelectItem value="MEDIUM">{t('Medium')}</SelectItem>
-                    <SelectItem value="LARGE">{t('Large')}</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
-
-            {formData.type && formData.type !== 'WET' && (
+            {!!formData.poopSize && (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="form-label">{t('Condition')}</label>
@@ -442,28 +475,6 @@ export default function DiaperForm({
                     </SelectContent>
                   </Select>
                 </div>
-              </div>
-            )}
-
-            {formData.type && formData.type !== 'WET' && (
-              <div>
-                <label className="form-label">{t('Poo Size')}</label>
-                <Select
-                  value={formData.poopSize}
-                  onValueChange={(value: DiaperSize) =>
-                    setFormData({ ...formData, poopSize: value })
-                  }
-                  disabled={loading}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder={t("Select size")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="SMALL">{t('Small')}</SelectItem>
-                    <SelectItem value="MEDIUM">{t('Medium')}</SelectItem>
-                    <SelectItem value="LARGE">{t('Large')}</SelectItem>
-                  </SelectContent>
-                </Select>
               </div>
             )}
 
