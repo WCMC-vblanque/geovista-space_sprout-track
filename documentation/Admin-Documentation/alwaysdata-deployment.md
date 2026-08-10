@@ -172,6 +172,61 @@ the backup's `ENC_HASH` travels in the zip so encrypted fields decrypt correctly
 > back-fill the missing one. See the project `TODO.md` (Bugs conocidos → B1) for the
 > root cause and fix.
 
+## Running staging alongside prod (shared DB + shared uploaded files)
+
+This project runs two sites on the same Alwaysdata account: prod
+(`~/www/geovista-space_sprout-track`) and staging
+(`~/www/geovista-space_sprout-track-staging`, a feature-branch build for testing
+before merging to `main`). Staging shares prod's **PostgreSQL database** and
+**`ENC_HASH`** (copy prod's `.env`, only change `APP_URL`) — see the note at the
+top of this doc. Safe to share the DB only for branches that don't change
+`prisma/schema.prisma` in a way prod can't tolerate; purely additive columns/
+tables (new nullable fields, new models) are fine, since prod's older Prisma
+client simply never selects them.
+
+**Uploaded files (`Files/photos`, `Files/diapers`, `Files/notes`, etc.) must be
+shared too, for the same reason as the DB.** Encrypted photo/attachment
+filenames are stored as DB rows; since that DB is shared, a photo uploaded via
+staging has a row that prod's database also sees — but if each site kept its
+own separate `Files/` folder, prod would fail to find (and decrypt) a file
+that was only ever written to staging's disk, and vice versa. Symlinking both
+sites' `Files/` directory to one shared folder keeps every row's file
+reachable from either site.
+
+### One-time migration to a shared `Files/` folder
+
+Run once, from SSH, after backing up both existing `Files/` directories:
+
+```bash
+# 1. Create the shared location (outside both app directories, so it survives
+#    either one being wiped/redeployed)
+mkdir -p ~/www/sprout-track-shared-files
+
+# 2. Back up both existing Files/ dirs first (safety net)
+tar -czf ~/files-backup-prod-$(date +%Y%m%d).tar.gz -C ~/www/geovista-space_sprout-track Files
+tar -czf ~/files-backup-staging-$(date +%Y%m%d).tar.gz -C ~/www/geovista-space_sprout-track-staging Files
+
+# 3. Merge both into the shared folder (filenames are UUIDs, so no collision risk)
+rsync -a ~/www/geovista-space_sprout-track/Files/ ~/www/sprout-track-shared-files/
+rsync -a ~/www/geovista-space_sprout-track-staging/Files/ ~/www/sprout-track-shared-files/
+
+# 4. Remove the old separate folders, replace with symlinks
+rm -rf ~/www/geovista-space_sprout-track/Files
+rm -rf ~/www/geovista-space_sprout-track-staging/Files
+ln -s ~/www/sprout-track-shared-files ~/www/geovista-space_sprout-track/Files
+ln -s ~/www/sprout-track-shared-files ~/www/geovista-space_sprout-track-staging/Files
+
+# 5. Verify both are symlinks pointing at the shared folder
+ls -la ~/www/geovista-space_sprout-track/Files
+ls -la ~/www/geovista-space_sprout-track-staging/Files
+```
+
+Restart both sites afterward. No code change or redeploy is needed — the app
+already resolves `Files/` relative to its working directory at runtime
+(`process.cwd()/Files` in `src/lib/file-encryption.ts`), and a symlink is
+transparent to that. Only delete the two `.tar.gz` backups once you've
+confirmed photos load correctly on both sites.
+
 ## Related Documentation
 
 - [Local (Non-Docker) Deployment](local-deployment.md)
