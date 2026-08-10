@@ -71,6 +71,7 @@ const TimelineActivityDetails = ({
       else if ('vaccineName' in activity) onEdit(activity, 'vaccine');
       else if ('title' in activity && 'category' in activity) onEdit(activity, 'milestone');
       else if ('value' in activity && 'unit' in activity) onEdit(activity, 'measurement');
+      else if ('originalName' in activity && 'mimeType' in activity) onEdit(activity, 'photo');
     }
   };
 
@@ -96,6 +97,12 @@ const TimelineActivityDetails = ({
     >
       <FormPageContent>
         <div className="space-y-4 p-4">
+          {'originalName' in activity && (
+            <PhotoThumbnail
+              src={`/api/photo-log/file/${activity.id}`}
+              className="w-full max-h-96 object-contain rounded-lg"
+            />
+          )}
           {'condition' in activity && (activity as any).hasPhoto && (
             <PhotoThumbnail
               src={`/api/diaper-log/file/${activity.id}`}

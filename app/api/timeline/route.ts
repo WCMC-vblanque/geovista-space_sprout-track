@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '../db';
-import { ApiResponse, SleepLogResponse, FeedLogResponse, DiaperLogResponse, NoteResponse, BathLogResponse, PumpLogResponse, PlayLogResponse, MilestoneResponse, MeasurementResponse, MedicineLogResponse, MedicineResponse, BreastMilkAdjustmentResponse, VaccineLogResponse } from '../types';
+import { ApiResponse, SleepLogResponse, FeedLogResponse, DiaperLogResponse, NoteResponse, BathLogResponse, PumpLogResponse, PlayLogResponse, MilestoneResponse, MeasurementResponse, MedicineLogResponse, MedicineResponse, BreastMilkAdjustmentResponse, VaccineLogResponse, PhotoLogResponse } from '../types';
 import { withAuthContext, AuthResult } from '../utils/auth';
 import { toUTC, formatForResponse } from '../utils/timezone';
 
 // Extended activity types with caretaker information
 type ActivityTypeWithCaretaker = (
-  SleepLogResponse | FeedLogResponse | DiaperLogResponse | NoteResponse | BathLogResponse | PumpLogResponse | PlayLogResponse | MilestoneResponse | MeasurementResponse | MedicineLogResponse | BreastMilkAdjustmentResponse | VaccineLogResponse
+  SleepLogResponse | FeedLogResponse | DiaperLogResponse | NoteResponse | BathLogResponse | PumpLogResponse | PlayLogResponse | MilestoneResponse | MeasurementResponse | MedicineLogResponse | BreastMilkAdjustmentResponse | VaccineLogResponse | PhotoLogResponse
 ) & {
   caretakerId?: string | null;
   caretakerName?: string;
@@ -147,7 +147,7 @@ async function handleGet(req: NextRequest, authContext: AuthResult) {
 
     // Get recent activities from each type with caretaker information
     const emptyPromise = Promise.resolve([]);
-    const [sleepLogs, feedLogs, diaperLogs, noteLogs, bathLogs, pumpLogs, playLogs, milestoneLogs, measurementLogs, medicineLogs, breastMilkAdjustments, vaccineLogs] = await Promise.all([
+    const [sleepLogs, feedLogs, diaperLogs, noteLogs, bathLogs, pumpLogs, playLogs, milestoneLogs, measurementLogs, medicineLogs, breastMilkAdjustments, vaccineLogs, photoLogs] = await Promise.all([
       shouldFetch('sleep') ? prisma.sleepLog.findMany({
         where: {
           babyId,
@@ -364,9 +364,26 @@ async function handleGet(req: NextRequest, authContext: AuthResult) {
           }
         },
         orderBy: { time: 'desc' }
+      }) : emptyPromise,
+      shouldFetch('photo') ? prisma.photoLog.findMany({
+        where: {
+          babyId,
+          deletedAt: null,
+          ...(startDateUTC && endDateUTC ? {
+            time: {
+              gte: startDateUTC,
+              lte: endDateUTC
+            }
+          } : {}),
+          familyId, // Filter by the verified family ID
+        },
+        include: {
+          caretaker: true
+        },
+        orderBy: { time: 'desc' }
       }) : emptyPromise
     ]);
-    
+
     console.log(`Results - sleepLogs: ${sleepLogs.length}, feedLogs: ${feedLogs.length}, diaperLogs: ${diaperLogs.length}, noteLogs: ${noteLogs.length}, bathLogs: ${bathLogs.length}, pumpLogs: ${pumpLogs.length}`);
 
     // Format the responses with caretaker information
@@ -587,6 +604,21 @@ async function handleGet(req: NextRequest, authContext: AuthResult) {
         };
       });
 
+    // Format photo logs (storedName is intentionally omitted from the response)
+    const formattedPhotoLogs: ActivityTypeWithCaretaker[] = photoLogs
+      .map(log => {
+        const { caretaker, storedName, ...logWithoutCaretaker } = log;
+        return {
+          ...logWithoutCaretaker,
+          time: formatForResponse(log.time) || '',
+          createdAt: formatForResponse(log.createdAt) || '',
+          updatedAt: formatForResponse(log.updatedAt) || '',
+          deletedAt: formatForResponse(log.deletedAt),
+          caretakerId: log.caretakerId,
+          caretakerName: caretaker ? caretaker.name : undefined,
+        };
+      });
+
     // Combine and sort all activities
     const allActivities = [
       ...formattedSleepLogs,
@@ -600,7 +632,8 @@ async function handleGet(req: NextRequest, authContext: AuthResult) {
       ...formattedMeasurementLogs,
       ...formattedMedicineLogs,
       ...formattedBreastMilkAdjustments,
-      ...formattedVaccineLogs
+      ...formattedVaccineLogs,
+      ...formattedPhotoLogs
     ]
     .sort((a, b) => getActivityTime(b) - getActivityTime(a));
     

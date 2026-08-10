@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { BarChart3, TrendingUp, Activity, Grid3X3, CalendarIcon, Loader2, Baby as BabyIcon, Trophy, HeartPulse, FileText } from 'lucide-react';
+import { BarChart3, TrendingUp, Activity, Grid3X3, CalendarIcon, Loader2, Baby as BabyIcon, Trophy, HeartPulse, FileText, Film } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
 import { useBaby } from '@/app/context/baby';
 import { Button } from '@/src/components/ui/button';
@@ -20,6 +20,7 @@ import ActivityTab from './ActivityTab';
 import HeatmapsTab from './HeatmapsTab';
 import HealthTab from './HealthTab';
 import MonthlyReportCard from './MonthlyReportCard';
+import PhotoTimelapseTab from './PhotoTimelapseTab';
 import { useLocalization } from '@/src/context/localization';
 import { useTimezone } from '@/app/context/timezone';
 import { formatDateDisplay } from '@/src/utils/dateFormat';
@@ -152,6 +153,7 @@ const Reports: React.FC<ReportsProps> = ({ className }) => {
       { id: 'growth' as ReportTab, label: t('Growth Trends Tab'), icon: TrendingUp },
       { id: 'activity' as ReportTab, label: t('Activity Tab'), icon: Activity },
       { id: 'heatmaps' as ReportTab, label: t('Heatmaps Tab'), icon: Grid3X3 },
+      { id: 'timelapse' as ReportTab, label: t('Growth Timelapse'), icon: Film },
     ],
     [t]
   );
@@ -173,6 +175,8 @@ const Reports: React.FC<ReportsProps> = ({ className }) => {
         return <HealthTab activities={activities} dateRange={dateRange} isLoading={isLoading} />;
       case 'report-card':
         return <MonthlyReportCard />;
+      case 'timelapse':
+        return <PhotoTimelapseTab />;
       default:
         return null;
     }

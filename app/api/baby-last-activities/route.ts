@@ -46,7 +46,7 @@ async function handleGet(req: NextRequest, authContext: AuthResult) {
     }
     
     // Get the most recent activity of each type
-    const [lastDiaper, lastPoopDiaper, lastBath, measurements, lastNote] = await Promise.all([
+    const [lastDiaper, lastPoopDiaper, lastBath, measurements, lastNote, lastPhoto] = await Promise.all([
       prisma.diaperLog.findFirst({
         where: { 
           babyId, 
@@ -85,8 +85,17 @@ async function handleGet(req: NextRequest, authContext: AuthResult) {
         include: { caretaker: true }
       }),
       prisma.note.findFirst({
-        where: { 
-          babyId, 
+        where: {
+          babyId,
+          deletedAt: null,
+          familyId: userFamilyId,
+        },
+        orderBy: { time: 'desc' },
+        include: { caretaker: true }
+      }),
+      prisma.photoLog.findFirst({
+        where: {
+          babyId,
           deletedAt: null,
           familyId: userFamilyId,
         },
@@ -125,6 +134,11 @@ async function handleGet(req: NextRequest, authContext: AuthResult) {
         ...lastNote,
         time: formatForResponse(lastNote.time) || '',
         caretakerName: lastNote.caretaker?.name
+      } : null,
+      lastPhoto: lastPhoto ? {
+        id: lastPhoto.id,
+        time: formatForResponse(lastPhoto.time) || '',
+        caretakerName: lastPhoto.caretaker?.name
       } : null
     };
     

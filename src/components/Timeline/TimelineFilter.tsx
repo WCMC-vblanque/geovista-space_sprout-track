@@ -12,6 +12,7 @@ import {
   Trophy,
   Ruler,
   PillBottle,
+  Camera,
 } from 'lucide-react';
 import { diaper, bottleBaby } from '@lucide/lab';
 import { FilterType, TimelineFilterProps } from './types';
@@ -56,6 +57,7 @@ const TimelineFilter = ({
     { type: 'milestone', icon: <Trophy className="h-4 w-4" />, label: t('Milestone') },
     { type: 'measurement', icon: <Ruler className="h-4 w-4" />, label: t('Measurement') },
     { type: 'medicine', icon: <PillBottle className="h-4 w-4" />, label: t('Medicine') },
+    { type: 'photo', icon: <Camera className="h-4 w-4" />, label: t('Daily Photo') },
   ] as const;
 
 

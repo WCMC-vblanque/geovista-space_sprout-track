@@ -21,7 +21,8 @@ import {
   Baby,
   Plus,
   Minus,
-  Syringe
+  Syringe,
+  Camera
 } from 'lucide-react';
 import { diaper, bottleBaby } from '@lucide/lab';
 import { 
@@ -95,6 +96,9 @@ export const getActivityIcon = (activity: ActivityType) => {
     if ('condition' in activity) {
       return <Icon iconNode={diaper} className="h-4 w-4 text-white" />; // Diaper activity
     }
+  }
+  if ('originalName' in activity) {
+    return <Camera className="h-4 w-4 text-white" />; // Photo activity
   }
   if ('content' in activity) {
     return <Edit className="h-4 w-4 text-gray-700" />; // Note activity
@@ -442,13 +446,22 @@ export const getActivityDetails = (activity: ActivityType, settings: Settings | 
       };
     }
   }
+  if ('originalName' in activity) {
+    const photoDetails = [
+      { label: t('Time'), value: formatTime((activity as any).time, settings, true, t) },
+    ];
+    return {
+      title: t('Daily Photo'),
+      details: [...photoDetails, ...caretakerDetail],
+    };
+  }
   if ('content' in activity) {
     const noteDetails = [
       { label: t('Time'), value: formatTime(activity.time, settings, true, t) },
       { label: t('Content'), value: activity.content },
       { label: t('Category'), value: activity.category || t('Not specified') },
     ];
-    
+
     return {
       title: t('Note'),
       details: [...noteDetails, ...caretakerDetail],
@@ -853,6 +866,13 @@ export const getActivityDescription = (activity: ActivityType, settings: Setting
       };
     }
   }
+  if ('originalName' in activity) {
+    const time = formatTime((activity as any).time, settings, true, t);
+    return {
+      type: t('Daily Photo'),
+      details: time
+    };
+  }
   if ('content' in activity) {
     const time = formatTime(activity.time, settings, true, t);
     const content = activity.content.length > 50 ? activity.content.slice(0, 50) + '...' : activity.content;
@@ -1036,6 +1056,7 @@ export const getActivityEndpoint = (activity: ActivityType): string => {
   if ('vaccineName' in activity) return 'vaccine-log';
   if ('title' in activity && 'category' in activity) return 'milestone-log';
   if ('value' in activity && 'unit' in activity) return 'measurement-log';
+  if ('originalName' in activity) return 'photo-log';
   
   // Log the activity for debugging
   console.log('Activity type not identified:', activity);
@@ -1100,6 +1121,9 @@ export const getActivityStyle = (activity: ActivityType): ActivityStyle => {
   }
   if ('vaccineName' in activity) {
     return { bg: 'bg-white border-2 border-red-500', textColor: 'text-red-600' };
+  }
+  if ('originalName' in activity) {
+    return { bg: 'bg-gradient-to-r from-cyan-500 to-cyan-600', textColor: 'text-white' };
   }
   if ('title' in activity && 'category' in activity) {
     return {
