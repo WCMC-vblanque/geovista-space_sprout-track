@@ -101,14 +101,16 @@ const TimelineActivityDetails = ({
           {'originalName' in activity && (
             <PhotoThumbnail
               src={`/api/photo-log/file/${activity.id}`}
-              className="w-full max-h-96 object-contain rounded-lg"
+              className="w-full max-h-96 object-contain rounded-lg cursor-zoom-in"
+              expandable
             />
           )}
           {'condition' in activity && (activity as any).hasPhoto && (
             <PhotoThumbnail
               src={`/api/diaper-log/file/${activity.id}`}
               alt={t('Photo')}
-              className="w-full max-h-60 object-contain rounded-lg border border-gray-200 timeline-details-photo"
+              className="w-full max-h-60 object-contain rounded-lg border border-gray-200 timeline-details-photo cursor-zoom-in"
+              expandable
             />
           )}
           {medicineDetails ? (
