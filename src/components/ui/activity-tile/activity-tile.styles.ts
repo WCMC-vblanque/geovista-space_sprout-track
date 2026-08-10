@@ -64,8 +64,7 @@ export const activityTileStyles = {
       photo: "text-cyan-600",
       default: "text-gray-800"
     },
-    // Default icon paths for each variant (photo has no dedicated PNG asset - it
-    // always renders as a Lucide Camera icon, see activity-tile-icon.tsx)
+    // Default icon paths for each variant
     defaultIcons: {
       sleep: '/crib-128.png',
       feed: '/bottle-128.png',
@@ -78,7 +77,7 @@ export const activityTileStyles = {
       milestone: '/milestone-128.png',
       medicine: '/med-128.png',
       vaccine: '/vaccine-128.png',
-      photo: '',
+      photo: '/photo-128.png',
       default: '/default-128.png'
     }
   },

@@ -71,6 +71,7 @@ const TimelineActivityDetails = ({
       else if ('vaccineName' in activity) onEdit(activity, 'vaccine');
       else if ('title' in activity && 'category' in activity) onEdit(activity, 'milestone');
       else if ('value' in activity && 'unit' in activity) onEdit(activity, 'measurement');
+      else if ('originalName' in activity && 'mimeType' in activity) onEdit(activity, 'photo');
     }
   };
 

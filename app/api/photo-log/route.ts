@@ -192,6 +192,64 @@ async function handlePost(req: NextRequest, authContext: AuthResult) {
   }
 }
 
+/**
+ * PUT /api/photo-log?id=...
+ * JSON body: { time: string }
+ * Updates only the timestamp of an existing photo log (no file change).
+ */
+async function handlePut(req: NextRequest, authContext: AuthResult) {
+  const writeCheck = checkWritePermission(authContext);
+  if (!writeCheck.allowed) {
+    return writeCheck.response!;
+  }
+
+  try {
+    const { familyId: userFamilyId } = authContext;
+    if (!userFamilyId) {
+      return NextResponse.json<ApiResponse<null>>({ success: false, error: 'User is not associated with a family.' }, { status: 403 });
+    }
+
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get('id');
+    const body: { time?: string } = await req.json();
+
+    if (!id) {
+      return NextResponse.json<ApiResponse<null>>({ success: false, error: 'Photo log ID is required' }, { status: 400 });
+    }
+
+    if (!body.time) {
+      return NextResponse.json<ApiResponse<null>>({ success: false, error: 'Time is required' }, { status: 400 });
+    }
+
+    const existingPhotoLog = await prisma.photoLog.findFirst({
+      where: { id, familyId: userFamilyId },
+    });
+
+    if (!existingPhotoLog) {
+      return NextResponse.json<ApiResponse<null>>(
+        { success: false, error: 'Photo log not found or access denied' },
+        { status: 404 }
+      );
+    }
+
+    const photoLog = await prisma.photoLog.update({
+      where: { id },
+      data: { time: toUTC(body.time) },
+    });
+
+    return NextResponse.json<ApiResponse<PhotoLogResponse>>({
+      success: true,
+      data: formatPhotoLog(photoLog),
+    });
+  } catch (error) {
+    console.error('Error updating photo log:', error);
+    return NextResponse.json<ApiResponse<PhotoLogResponse>>(
+      { success: false, error: 'Failed to update photo log' },
+      { status: 500 }
+    );
+  }
+}
+
 async function handleGet(req: NextRequest, authContext: AuthResult) {
   try {
     const { familyId: userFamilyId } = authContext;
@@ -300,4 +358,5 @@ async function handleDelete(req: NextRequest, authContext: AuthResult) {
 // Apply authentication middleware to all handlers
 export const GET = withAuthContext(handleGet as (req: NextRequest, authContext: AuthResult) => Promise<NextResponse<ApiResponse<any>>>);
 export const POST = withAuthContext(handlePost as (req: NextRequest, authContext: AuthResult) => Promise<NextResponse<ApiResponse<any>>>);
+export const PUT = withAuthContext(handlePut as (req: NextRequest, authContext: AuthResult) => Promise<NextResponse<ApiResponse<any>>>);
 export const DELETE = withAuthContext(handleDelete as (req: NextRequest, authContext: AuthResult) => Promise<NextResponse<ApiResponse<any>>>);

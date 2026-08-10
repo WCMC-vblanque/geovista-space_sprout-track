@@ -54,7 +54,7 @@ export interface FullLogActivityDetailsProps {
   isOpen: boolean;
   onClose: () => void;
   onDelete: (activity: ActivityType) => void;
-  onEdit: (activity: ActivityType, type: 'sleep' | 'feed' | 'diaper' | 'note' | 'bath' | 'pump' | 'breast-milk-adjustment' | 'milestone' | 'measurement' | 'medicine' | 'play' | 'vaccine') => void;
+  onEdit: (activity: ActivityType, type: 'sleep' | 'feed' | 'diaper' | 'note' | 'bath' | 'pump' | 'breast-milk-adjustment' | 'milestone' | 'measurement' | 'medicine' | 'play' | 'vaccine' | 'photo') => void;
 }
 
 export interface ActivityDetail {

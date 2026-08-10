@@ -76,6 +76,7 @@ const FullLogActivityDetails: React.FC<FullLogActivityDetailsProps> = ({
       else if ('title' in activity && 'category' in activity) onEdit(activity, 'milestone');
       else if ('value' in activity && 'unit' in activity) onEdit(activity, 'measurement');
       else if ('doseAmount' in activity && 'medicineId' in activity) onEdit(activity, 'medicine');
+      else if ('originalName' in activity && 'mimeType' in activity) onEdit(activity, 'photo');
     }
   };
 
