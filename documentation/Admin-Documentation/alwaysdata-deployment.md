@@ -154,6 +154,36 @@ npm run build
 Then restart the site from the panel. (The repo's `scripts/deployment.sh` and
 `service.sh` assume systemd and do **not** apply on Alwaysdata.)
 
+## Building locally and transferring the build (low-resource server)
+
+If the server doesn't have enough RAM/CPU for `npm run build`, you can build
+locally and ship `.next`, `node_modules`, `public`, `prisma`, `package.json`,
+and `package-lock.json` (e.g. as a single tar.gz, to avoid FTP choking on
+`node_modules`'s tens of thousands of files). **Never include a build's
+`prisma/schema.prisma` or generated Prisma Client without regenerating them
+against the server's own `.env` first.**
+
+Why: `npm run prisma:generate` runs `prisma:prepare` (`scripts/prisma-provider.js`),
+which rewrites `schema.prisma`'s datasource block to match whatever
+`DATABASE_PROVIDER`/`DATABASE_URL` is in the **currently sourced `.env`** at
+generate time. If you build locally against your local dev `.env` (typically
+SQLite) and ship that `schema.prisma` + client to a PostgreSQL server, the
+app starts without error but every database query fails at runtime
+(`Error validating datasource`: URL must start with `file:`) — easy to miss
+since there's no crash, just a broken site.
+
+**After transferring a locally-built archive, always regenerate on the server
+itself before restarting:**
+
+```bash
+cd ~/www/sprout-track
+set -a; source .env; set +a
+npm run prisma:generate && npm run prisma:generate:log
+```
+
+This is lightweight (Prisma codegen only, not a full build) and safe to run
+even on constrained resources.
+
 ## What to ignore
 
 Everything Docker-related (`Dockerfile`, `docker-*.yml`, `docker-startup.sh`) and the
