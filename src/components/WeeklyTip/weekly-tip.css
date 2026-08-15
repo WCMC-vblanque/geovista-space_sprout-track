@@ -1,0 +1,30 @@
+/* Dark mode overrides for WeeklyTip component */
+html.dark .weekly-tip-container {
+  background-color: #374151 !important; /* gray-700 */
+  border-color: #4b5563 !important; /* gray-600 */
+}
+
+html.dark .weekly-tip-header {
+  background-color: #4b5563 !important; /* gray-600 */
+  border-color: #6b7280 !important; /* gray-500 */
+}
+
+html.dark .weekly-tip-header-text {
+  color: #9ca3af !important; /* gray-400 */
+}
+
+html.dark .weekly-tip-title {
+  color: #e5e7eb !important; /* gray-200 */
+}
+
+html.dark .weekly-tip-text {
+  color: #d1d5db !important; /* gray-300 */
+}
+
+html.dark .weekly-tip-source {
+  color: #9ca3af !important; /* gray-400 */
+}
+
+html.dark .weekly-tip-source-link:hover {
+  color: #e5e7eb !important; /* gray-200 */
+}

@@ -11,6 +11,7 @@ import { useBaby } from '../../../context/baby';
 import { useFamily } from '@/src/context/family';
 import { useLocalization } from '@/src/context/localization';
 import { ActivityTileGroup } from '@/src/components/ActivityTileGroup';
+import WeeklyTip from '@/src/components/WeeklyTip';
 import SleepForm from '@/src/components/forms/SleepForm';
 import FeedForm from '@/src/components/forms/FeedForm';
 import DiaperForm from '@/src/components/forms/DiaperForm';
@@ -506,6 +507,9 @@ function HomeContent(): React.ReactElement {
           onPhotoClick={() => setShowPhotoModal(true)}
         />
       )}
+
+      {/* Weekly Tip */}
+      {selectedBaby?.id && <WeeklyTip baby={selectedBaby} />}
 
       {/* Active Breastfeed Banner */}
       {selectedBaby?.id && activeFeedData && (
