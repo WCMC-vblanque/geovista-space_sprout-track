@@ -231,6 +231,43 @@ directly. Update the Alwaysdata site's **Command** field accordingly
 (`node server.js` instead of `npm start`); the working directory stays
 the same.
 
+## Troubleshooting "Connection to upstream failed"
+
+This means Apache can't reach the Node process at all (crashed, never
+started, or listening on the wrong address) - not an app-level error page.
+Debugging this got confused in practice by several Alwaysdata-specific
+gotchas; check these **before** assuming it's an app bug:
+
+- **Never leave a manual `node server.js` debug run in the background.**
+  It binds the exact same port/address the real Alwaysdata-managed process
+  needs, so a stray one causes the *real* process to fail to bind and
+  crash-loop - which looks exactly like an app bug but is self-inflicted.
+  Always run manual tests in the foreground (or explicitly `kill` the PID
+  when done) before restarting the site from the panel.
+- **`ps`/`pkill -f` won't match on `server.js` or `node`.** Next renames the
+  process title to `next-server (v...)` at runtime, so `pkill -f
+  "server.js"` silently matches nothing even though the process is very
+  much alive. Find it with `ps aux | grep next-server` and kill by PID.
+- **`localhost`/`127.0.0.1` is not the address Apache actually proxies to.**
+  Each Alwaysdata account gets its own private loopback IP (e.g.
+  `127.3.182.47`, visible via `ss -tlnp` on the real listening socket).
+  Testing against `localhost` will show "connection refused" even when the
+  app is perfectly healthy - always read the actual bound address from `ss`
+  first, don't assume.
+- **A single `SIGTERM` sent by Alwaysdata around "idle" is normal**
+  (auto-sleep after inactivity, wakes on next request). Two `SIGTERM`s ~50s
+  apart followed by "exited spontaneously with return code N/A" is not
+  normal and is the actual symptom to chase (but rule out the stray-process
+  port collision above first - it produces this exact pattern).
+- **A `PORT=` line hardcoded in `.env`** (leftover from a pre-standalone
+  setup using `next start`, which reads it) can override/conflict with the
+  port Alwaysdata injects at spawn time. Don't hardcode `PORT` - let
+  Alwaysdata assign it.
+- **Prisma's SQLite `file:` URLs resolve relative to `prisma/schema.prisma`,
+  not the process's working directory at runtime.** `file:../db/x.db`
+  means `<project-root>/db/x.db`, not one level above wherever the process
+  happens to be started from.
+
 ## What to ignore
 
 Everything Docker-related (`Dockerfile`, `docker-*.yml`, `docker-startup.sh`) and the
