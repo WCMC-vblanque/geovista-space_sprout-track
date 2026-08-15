@@ -267,6 +267,92 @@ gotchas; check these **before** assuming it's an app bug:
   not the process's working directory at runtime.** `file:../db/x.db`
   means `<project-root>/db/x.db`, not one level above wherever the process
   happens to be started from.
+- **This Alwaysdata account shares one limited pool of concurrent
+  "upstream" (Node/custom-command) processes across *every* site on the
+  account** - not just the two sprout-track sites. Other apps here
+  (`listmonk`, a `filebrowser` under `store`, `metabase`) compete for the
+  same pool. When one of them gets a request and needs a slot, Alwaysdata
+  evicts whichever other site's process has been idle longest - which
+  produces the exact "two SIGTERMs, exited spontaneously" pattern above,
+  with **no app-level bug involved at all**. This affects prod too (it
+  also just runs plain `npm start`, same pool) - it isn't specific to
+  staging or to standalone builds. If "connection to upstream failed"
+  recurs, check `grep "Upstream starting" ~/admin/logs/sites/2026/sites-<date>.log`
+  for *other* apps starting right around the failure time before assuming
+  it's this project's problem.
+- **Deleting a site in the Alwaysdata panel does not necessarily stop it
+  from being spawned immediately.** A deleted `store`/`filebrowser` site
+  was observed starting again *after* being deleted in the panel - likely
+  because its address was still resolving and something (a bot, a stray
+  tab, a crawler) still reached it. If you stop using an app on this
+  account, also remove/park its domain, not just delete the site entry,
+  and verify the domain stops responding before assuming it's gone.
+- **Building directly on a site with a real `Files` symlink can crash
+  Turbopack.** `Files/` is a symlink pointing *outside* the project
+  directory (to the shared uploads folder - see "Running staging alongside
+  prod" above). Turbopack's build-time asset scanner can panic
+  ("Symlink ... is invalid, it points out of the filesystem root") when it
+  encounters this while running `npm run build` **on the server** (this
+  doesn't happen building locally, where `Files/` isn't a real symlink to
+  actual data). Work around it by moving the symlink aside for the
+  duration of the build and restoring it after, success or failure:
+  ```bash
+  mv Files Files.symlink-backup
+  npm run build; echo BUILD_EXIT=$?
+  mv Files.symlink-backup Files
+  ```
+- **`NODE_ENV=production` needs verifying per-site, every time** - not just
+  once on prod. Staging independently had `NODE_ENV` set to a non-production
+  value too, causing the identical `/_global-error` prerender crash
+  (`Cannot read properties of null (reading 'useContext')`) the first time a
+  full build was run there. Check `grep "^NODE_ENV" .env` on *whichever*
+  site you're building on before running `npm run build` directly on a
+  server.
+- **A site's `.env` can silently drift from what the docs say it should
+  be.** Staging was found to be running its own disconnected local SQLite
+  database (`DATABASE_PROVIDER=sqlite`) instead of sharing prod's
+  PostgreSQL DB as documented below - nobody had changed it during any of
+  this debugging, it had simply drifted at some earlier point and gone
+  unnoticed. If prod/staging data ever looks unexpectedly different (or
+  unexpectedly *identical* in a way that doesn't add up), diff the two
+  `.env` files' `DATABASE_PROVIDER`/`DATABASE_URL`/`ENC_HASH` before
+  investigating anything else:
+  ```bash
+  diff <(grep -E "^(DATABASE_PROVIDER|DATABASE_URL|LOG_DATABASE_URL|ENC_HASH)=" \
+    ~/www/geovista-space_sprout-track/.env) \
+    <(grep -E "^(DATABASE_PROVIDER|DATABASE_URL|LOG_DATABASE_URL|ENC_HASH)=" \
+    ~/www/geovista-space_sprout-track-staging/.env)
+  ```
+
+### Pre-flight checklist before any deploy/build on either site
+
+Run through this *every time*, not just when something's already broken -
+most of the incidents above were each individually easy to fix once found,
+but expensive to find because they weren't checked proactively:
+
+1. `grep "^NODE_ENV" .env` → must be `production`.
+2. `grep "^PORT" .env` → must be **absent** (let Alwaysdata inject it).
+3. `grep -E "^(DATABASE_PROVIDER|DATABASE_URL)" .env` → matches what this
+   site is actually supposed to use (compare against the other site's
+   `.env` if they're meant to share a DB).
+4. `ps aux | grep next-server` and `ss -tlnp | grep node` → clean, nothing
+   of yours left over from a previous debugging session.
+5. If building directly on the server: move `Files` aside first (see
+   above), and check `grep "Upstream starting" ~/admin/logs/sites/2026/sites-<today>.log`
+   to see whether other account apps are currently active/competing.
+6. After any locally-built transfer: regenerate the Prisma client against
+   *this* site's own `.env` before restarting - never trust a client
+   generated against a different environment.
+
+### ⚠️ Never paste real `.env` values into chat/logs/tickets
+
+During this debugging, a real database password ended up pasted into a
+chat session verbatim while comparing prod/staging `.env` files. Prefer
+`diff <(...) <(...)` (as shown above) or grep for just the *keys* you need
+to compare, not commands that print full connection strings. If a secret
+does leak, rotate it (Alwaysdata admin panel → PostgreSQL → change
+password) and update `DATABASE_URL`/`LOG_DATABASE_URL` in both sites'
+`.env` files afterward.
 
 ## What to ignore
 
