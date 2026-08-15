@@ -143,16 +143,61 @@ instead of the in-container cron daemon. Leave it `false` if you don't need push
 
 ```bash
 cd ~/www/sprout-track
+
+# 1. Confirm the working tree is actually clean before touching it.
+#    A dirty/drifted tree here means `git checkout <branch>` will abort
+#    later with "local changes would be overwritten" - see lesson below.
+git status
+
+git fetch origin
+git checkout <branch>              # if switching branches
+git reset --hard origin/<branch>   # only if step 1 showed drift you're OK discarding
+
 set -a; source .env; set +a
-git pull
-npm install
+npm install --include=dev          # --include=dev: see NODE_ENV lesson below
 npm run prisma:generate && npm run prisma:generate:log
 npx prisma db push --accept-data-loss --skip-generate
-npm run build
+
+mv Files Files.symlink-backup      # Turbopack can't handle the Files symlink mid-build
+npm run build; echo BUILD_EXIT=$?
+mv Files.symlink-backup Files      # always restore, even if the build failed
 ```
 
 Then restart the site from the panel. (The repo's `scripts/deployment.sh` and
 `service.sh` assume systemd and do **not** apply on Alwaysdata.)
+
+### Lessons learned (from a rough staging deploy)
+
+- **A dirty working tree makes `git checkout` fail silently into the old
+  code.** `git checkout <branch>` aborts with "local changes would be
+  overwritten" and does **not** switch branches - but the script kept
+  going, so `npm install`/`npm run build` ran against the *old* tree and
+  produced confusing, unrelated-looking errors (missing modules that had
+  nothing to do with the actual change). Always check the checkout/pull
+  actually succeeded (`git log -1 --oneline`, `git status` shows clean)
+  before running anything after it. If a previous deploy ever extracted a
+  build archive directly onto a site directory instead of going through
+  git (see "Building locally and transferring the build" above), the next
+  `git checkout` on that directory will hit exactly this - every file
+  looks locally modified, including binaries.
+- **`NODE_ENV=production` (from `.env`) makes `npm install` skip
+  devDependencies**, but Next.js needs build-time-only devDependencies
+  like `@tailwindcss/postcss` even for a production build. Always install
+  with `npm install --include=dev` on this project, not plain
+  `npm install`, whenever `.env` is sourced first.
+- **Don't rely on npm hoisting a transitive dependency for a module you
+  `import` directly.** `app/api/baby/create/route.ts` imported `zod`
+  without it ever being declared in `package.json` - it only worked
+  because some other package's dependency on `zod` happened to hoist it
+  to the top of `node_modules` locally. A clean install on another
+  machine hoisted differently and broke the build. If a file directly
+  imports a package, that package must be a direct dependency in
+  `package.json`, full stop - grep `package.json` for anything a new
+  route/component imports before assuming it's covered transitively.
+- **The `Files` symlink + Turbopack build panic (see Troubleshooting
+  below) isn't a rare edge case - it happens on every direct-on-server
+  build**, so it's now a default step in the update flow above, not just
+  a troubleshooting note to remember under pressure.
 
 ## Building locally and transferring the build (low-resource server)
 
@@ -343,6 +388,13 @@ but expensive to find because they weren't checked proactively:
 6. After any locally-built transfer: regenerate the Prisma client against
    *this* site's own `.env` before restarting - never trust a client
    generated against a different environment.
+7. After `git checkout`/`git pull`: verify it actually landed —
+   `git log -1 --oneline` shows the commit you expect and `git status`
+   is clean. A failed checkout doesn't stop the script; it just leaves
+   you building the old code with confusing errors.
+8. Always `npm install --include=dev`, never plain `npm install`, once
+   `.env` (`NODE_ENV=production`) is sourced — otherwise build-time
+   devDependencies silently don't get installed.
 
 ### ⚠️ Never paste real `.env` values into chat/logs/tickets
 
