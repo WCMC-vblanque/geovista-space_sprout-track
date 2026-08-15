@@ -10,7 +10,7 @@ daycare) so they can use the app with confidence.
 |-------|-------------|
 | [Editing Baby Details](editing-baby-details.md) | Update a baby's name, birth date, and warning thresholds at any time. |
 | [Quick Search (Command Palette)](command-palette.md) | Jump to any feature or action by typing a few words (`Ctrl/Cmd + K`). |
-| [Weekly Tip](weekly-tip.md) | A sourced development/care tip matched to your baby's current age, shown on the dashboard. |
+| [Baby Tips](weekly-tip.md) | A sourced development/care tip matched to your baby's current age, shown on the dashboard — browse other days with the arrows, and set daily vs. weekly frequency in Settings. |
 
 > More chapters will be added here over time. This manual is written to be
 > simple and task-oriented for non-technical caregivers.

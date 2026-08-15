@@ -28,3 +28,12 @@ html.dark .weekly-tip-source {
 html.dark .weekly-tip-source-link:hover {
   color: #e5e7eb !important; /* gray-200 */
 }
+
+html.dark .weekly-tip-nav-button {
+  color: #9ca3af !important; /* gray-400 */
+}
+
+html.dark .weekly-tip-nav-button:hover:not(:disabled) {
+  color: #e5e7eb !important; /* gray-200 */
+  background-color: #4b5563 !important; /* gray-600 */
+}

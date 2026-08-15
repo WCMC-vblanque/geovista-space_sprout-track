@@ -524,6 +524,7 @@ model Settings {
   includeSolidsInFeedTimer Boolean @default(true) // Include solid food feedings when calculating time since last feed
   dateFormat          String   @default("MM/DD/YYYY") // "MM/DD/YYYY" | "DD/MM/YYYY" | "YYYY-MM-DD"
   timeFormat          String   @default("12h") // "12h" | "24h"
+  tipFrequency        String   @default("weekly") // "daily" | "weekly" - how often a new baby tip is featured
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 

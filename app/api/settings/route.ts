@@ -40,6 +40,7 @@ async function handleGet(req: NextRequest, authContext: AuthResult) {
           includeSolidsInFeedTimer: true,
           dateFormat: 'MM/DD/YYYY',
           timeFormat: '12h',
+          tipFrequency: 'weekly',
           familyId: targetFamilyId,
         },
       });
@@ -115,7 +116,7 @@ async function handlePut(req: NextRequest, authContext: AuthResult) {
       'enableDebugTimer', 'enableDebugTimezone',
       'enableBreastMilkTracking',
       'includeSolidsInFeedTimer',
-      'dateFormat', 'timeFormat',
+      'dateFormat', 'timeFormat', 'tipFrequency',
     ];
 
     const isAdmin = authContext.caretakerRole === 'ADMIN' ||

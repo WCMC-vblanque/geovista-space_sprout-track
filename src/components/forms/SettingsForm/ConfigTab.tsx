@@ -366,6 +366,28 @@ export default function ConfigTab({
         </div>
       </div>
 
+      {/* Baby Tips */}
+      <div className="border-t border-slate-200 pt-6">
+        <h3 className="form-label mb-4">{t('Baby Tips')}</h3>
+        <div className="space-y-4">
+          <div>
+            <Label className="form-label">{t('Tip Frequency')}</Label>
+            <Select
+              value={(settings as any)?.tipFrequency || 'weekly'}
+              onValueChange={(value) => onSettingsChange({ tipFrequency: value } as any)}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="weekly">{t('Weekly')}</SelectItem>
+                <SelectItem value="daily">{t('Daily')}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      </div>
+
       {/* System Administration - Only show in self-hosted mode */}
       {deploymentConfig?.deploymentMode !== 'saas' && (
         <div className="border-t border-slate-200 pt-6">

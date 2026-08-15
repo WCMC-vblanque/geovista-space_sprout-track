@@ -62,6 +62,7 @@ function HomeContent(): React.ReactElement {
   const [lastPhotoTime, setLastPhotoTime] = useState<Record<string, Date>>({});
   const [includeSolidsInFeedTimer, setIncludeSolidsInFeedTimer] = useState(true);
   const includeSolidsRef = useRef(true);
+  const [tipFrequency, setTipFrequency] = useState<'daily' | 'weekly'>('weekly');
 
   // Open a log form directly when requested via the command palette (?log=...)
   useEffect(() => {
@@ -103,6 +104,7 @@ function HomeContent(): React.ReactElement {
           const value = data.data.includeSolidsInFeedTimer ?? true;
           setIncludeSolidsInFeedTimer(value);
           includeSolidsRef.current = value;
+          setTipFrequency(data.data.tipFrequency === 'daily' ? 'daily' : 'weekly');
         }
       } catch (error) {
         console.error('Error fetching settings:', error);
@@ -508,8 +510,8 @@ function HomeContent(): React.ReactElement {
         />
       )}
 
-      {/* Weekly Tip */}
-      {selectedBaby?.id && <WeeklyTip baby={selectedBaby} />}
+      {/* Baby Tip */}
+      {selectedBaby?.id && <WeeklyTip baby={selectedBaby} frequency={tipFrequency} />}
 
       {/* Active Breastfeed Banner */}
       {selectedBaby?.id && activeFeedData && (
