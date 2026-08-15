@@ -12,6 +12,41 @@ estéticas o de nicho).
 
 ---
 
+## 🏆 Comparativa con apps líderes (Huckleberry y similares) — ideas nuevas puntuadas
+
+Puntuación 0–10 según impacto directo en criar un bebé **sano e inteligente**
+(no popularidad ni monetización). Las ideas ya presentes más abajo en este
+documento **no se repiten aquí**, solo se referencian con su puntuación para
+tener una vista única priorizada. Solo se listan ideas **nuevas** que no
+estaban ya en la hoja de ruta.
+
+| # | Idea | Puntos | Nota |
+|---|------|:---:|------|
+| 1 | Motor de alertas críticas (ya en **Nivel 1.1**) | 10 | Sin cambios — máxima prioridad |
+| 2 | **Diario de alérgenos y primeros alimentos** — registro estructurado de introducción de sólidos/alérgenos (leche, huevo, cacahuete...) con recordatorios, siguiendo pautas pediátricas actuales (introducción temprana reduce riesgo de alergia) | 9 | **Nueva.** Impacto directo en salud, no cubierta hoy |
+| 3 | **Alertas de percentil de crecimiento fuera de curva** — usar los gráficos de crecimiento ya existentes para avisar automáticamente si una medición se desvía de la curva esperada | 9 | **Nueva.** Extiende el Nivel 1 con datos que la app ya tiene |
+| 4 | Notificaciones (ya en **Nivel 1.2**) | 9 | Habilitador de casi todo lo demás |
+| 5 | Ventanas de sueño / Wake Windows (ya en **Nivel 2.1**) | 8 | Sin cambios |
+| 6 | Recomendaciones por edad + calendario NHS (ya en **Nivel 2.2**) | 8 | **Parcialmente implementado** — ver componente `WeeklyTip` (rama `feature/weekly-tip`), cubre semanas 1–12 con fuentes NHS/Francia/España/Dinamarca. Falta extender a semanas 13–52 (issue #5 en GitHub) |
+| 7 | Calendario oficial de vacunas/controles (ya en **Nivel 3.3**) | 8 | Sin cambios |
+| 8 | **Previsión de stock** — avisar cuando la leche/fórmula/pañales en casa se están agotando según el ritmo de consumo registrado | 6 | **Nueva.** Práctico, evita quedarse sin suministro de madrugada |
+| 9 | **Bienestar del cuidador** — check-in breve de ánimo/descanso para quien cuida al bebé (no del bebé) | 6 | **Nueva.** El bienestar del cuidador está fuertemente correlacionado con el desarrollo del bebé; ningún competidor lo hace bien |
+| 10 | Trámites legales — registro civil/consular (ya en **Nivel 3.1/3.2**) | 5 | Sin cambios |
+| 11 | **Resumen para el pediatra** — generar un PDF/resumen de "qué preguntar" antes de una cita, usando el historial reciente de alertas y mediciones | 5 | **Nueva.** Reutiliza el export PDF ya existente |
+| 12 | Quick Log de 1 toque (ya en **Nivel 5.2**) | 4 | Sin cambios |
+| 13 | Consejo del día (ya en **Nivel 5.1**) | 4 | **Parcialmente implementado** por `WeeklyTip` — evaluar si conviene fusionar ambas ideas en una sola función en vez de dos widgets separados |
+| 14 | **Comparativa entre hermanos** — superponer curvas de crecimiento de varios bebés de la familia | 3 | **Nueva.** Analítica, no crítico |
+| 15 | Automatización domótica (ya en **Nivel 6.1**) | 3 | Sin cambios |
+| 16 | **Integración con monitores/cámaras inteligentes** | 2 | **Nueva.** Depende de hardware de terceros, baja prioridad para una app autoalojada |
+| 17 | **Funciones sociales/comunidad** | 1 | **Nueva, no recomendada** — choca con el espíritu privado/autoalojado de la app |
+| 18 | **Chat con expertos / teleconsulta** | 0 | **Nueva, no recomendada** — inviable sin modelo de negocio ni responsabilidad legal para una app open-source autoalojada; es el diferenciador de pago de Huckleberry pero no encaja aquí |
+
+**Recomendación de orden de ataque** (combinando esta tabla con los Niveles
+existentes): 1 → 2 → 3 → 4 → 5 → 6/7 → 8/9 → resto. Las ideas puntuadas 0–2
+se documentan aquí por completitud pero **no se recomienda implementarlas**.
+
+---
+
 ## 🐛 Bugs conocidos (corregir cuanto antes)
 
 ### B1. La importación SQLite → PostgreSQL pierde la fila `Settings` de la familia
