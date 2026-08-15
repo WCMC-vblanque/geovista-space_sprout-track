@@ -184,6 +184,53 @@ npm run prisma:generate && npm run prisma:generate:log
 This is lightweight (Prisma codegen only, not a full build) and safe to run
 even on constrained resources.
 
+### Standalone output (much smaller transfer)
+
+`next.config.js` supports Next.js's `output: 'standalone'` mode, gated behind
+`NEXT_OUTPUT_MODE=standalone` (set this in the site's own `.env` - currently
+only staging's, not prod's, until it's proven out). A standalone build ships
+its own pruned `node_modules` (only what's actually imported at runtime)
+instead of the full tree, cutting a locally-built transfer archive from
+~580MB down to ~110MB.
+
+Build locally with the provider matching the target site (only the
+`DATABASE_PROVIDER` matters for `prisma generate` - the actual `DATABASE_URL`
+is read from the environment at runtime, not baked in, so no secrets are
+needed to build):
+
+```bash
+DATABASE_PROVIDER=postgresql npm run prisma:generate
+DATABASE_PROVIDER=postgresql npm run prisma:generate:log
+NEXT_OUTPUT_MODE=standalone NODE_ENV=production npm run build
+```
+
+The `postbuild` script (`scripts/copy-standalone-assets.js`) automatically
+copies `public/` and `.next/static/` into `.next/standalone/` - Next
+deliberately omits both from the standalone output otherwise.
+
+Package and ship the *contents* of `.next/standalone/` (not the folder
+itself) as the deploy archive, so it extracts directly into the site's
+existing root - this preserves the site's own `.env` and its `Files`
+symlink, which aren't part of the standalone output:
+
+```bash
+tar -czf sprout-track-standalone.tar.gz -C .next/standalone .
+```
+
+On the server, extract into the site's directory as usual
+(`tar -xzf ... `), then run the same Prisma-regenerate step above against
+the site's real `.env` (same reasoning as the non-standalone case - never
+trust a locally-built Prisma client without regenerating it against the
+target's own environment).
+
+**Run it with `node server.js`, not `npm start`.** The pruned
+`node_modules` doesn't necessarily include the full `next` CLI, so
+`next start` (what `npm start` invokes) may not work - Next's own
+convention for standalone deploys is running the generated `server.js`
+directly. Update the Alwaysdata site's **Command** field accordingly
+(`node server.js` instead of `npm start`); the working directory stays
+the same.
+
 ## What to ignore
 
 Everything Docker-related (`Dockerfile`, `docker-*.yml`, `docker-startup.sh`) and the
