@@ -415,7 +415,7 @@ const TimelineActivityList = ({
                                     {/* Activity Icon */}
                                     {'originalName' in activity ? (
                                       <PhotoThumbnail
-                                        src={`/api/photo-log/file/${activity.id}`}
+                                        src={`/api/photo-log/file/${activity.id}?v=${new Date(activity.updatedAt).getTime()}`}
                                         className="flex-shrink-0 w-10 h-10 rounded-xl object-cover shadow-sm"
                                       />
                                     ) : (

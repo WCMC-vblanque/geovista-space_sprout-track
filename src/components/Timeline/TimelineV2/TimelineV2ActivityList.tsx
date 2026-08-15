@@ -252,7 +252,7 @@ const TimelineV2ActivityList = ({
                               {/* Event Icon */}
                               {'originalName' in activity ? (
                                 <PhotoThumbnail
-                                  src={`/api/photo-log/file/${activity.id}`}
+                                  src={`/api/photo-log/file/${activity.id}?v=${new Date(activity.updatedAt).getTime()}`}
                                   className="flex-shrink-0 w-8 h-8 rounded-lg object-cover event-icon photo"
                                 />
                               ) : (

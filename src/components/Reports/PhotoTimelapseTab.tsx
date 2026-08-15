@@ -93,11 +93,15 @@ const PhotoTimelapseTab: React.FC = () => {
 
   const ensureLoaded = useCallback((index: number) => {
     const photo = photos[index];
-    if (!photo || imageCache.current.has(photo.id) || loadingIds.current.has(photo.id)) return;
+    if (!photo) return;
+    // Key by id+updatedAt so replacing today's photo (same id, new content)
+    // isn't served from a stale cached blob.
+    const cacheKey = `${photo.id}:${photo.updatedAt}`;
+    if (imageCache.current.has(cacheKey) || loadingIds.current.has(cacheKey)) return;
 
-    loadingIds.current.add(photo.id);
+    loadingIds.current.add(cacheKey);
     const authToken = localStorage.getItem('authToken');
-    fetch(`/api/photo-log/file/${photo.id}`, {
+    fetch(`/api/photo-log/file/${photo.id}?v=${new Date(photo.updatedAt).getTime()}`, {
       headers: authToken ? { 'Authorization': `Bearer ${authToken}` } : {},
     })
       .then((res) => {
@@ -105,13 +109,13 @@ const PhotoTimelapseTab: React.FC = () => {
         return res.blob();
       })
       .then((blob) => {
-        imageCache.current.set(photo.id, URL.createObjectURL(blob));
-        loadingIds.current.delete(photo.id);
+        imageCache.current.set(cacheKey, URL.createObjectURL(blob));
+        loadingIds.current.delete(cacheKey);
         forceRerender((n) => n + 1);
       })
       .catch((err) => {
         console.error('Error loading timelapse frame:', err);
-        loadingIds.current.delete(photo.id);
+        loadingIds.current.delete(cacheKey);
       });
   }, [photos]);
 
@@ -124,15 +128,15 @@ const PhotoTimelapseTab: React.FC = () => {
       ensureLoaded(i);
     }
 
-    const keepIds = new Set(
+    const keepKeys = new Set(
       photos
         .slice(Math.max(0, currentIndex - CACHE_WINDOW_BEHIND), currentIndex + PREFETCH_AHEAD + 1)
-        .map((p) => p.id)
+        .map((p) => `${p.id}:${p.updatedAt}`)
     );
-    imageCache.current.forEach((url, id) => {
-      if (!keepIds.has(id)) {
+    imageCache.current.forEach((url, key) => {
+      if (!keepKeys.has(key)) {
         URL.revokeObjectURL(url);
-        imageCache.current.delete(id);
+        imageCache.current.delete(key);
       }
     });
   }, [currentIndex, photos, ensureLoaded]);
@@ -161,7 +165,7 @@ const PhotoTimelapseTab: React.FC = () => {
   }, []);
 
   const currentPhoto = photos[currentIndex];
-  const currentUrl = currentPhoto ? imageCache.current.get(currentPhoto.id) : undefined;
+  const currentUrl = currentPhoto ? imageCache.current.get(`${currentPhoto.id}:${currentPhoto.updatedAt}`) : undefined;
 
   const ageLabel = useMemo(() => {
     if (!currentPhoto || !selectedBaby?.birthDate) return '';

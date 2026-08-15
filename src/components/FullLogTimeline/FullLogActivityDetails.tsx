@@ -91,7 +91,7 @@ const FullLogActivityDetails: React.FC<FullLogActivityDetailsProps> = ({
         <div className="space-y-4 p-4">
           {'originalName' in activity && (
             <PhotoThumbnail
-              src={`/api/photo-log/file/${activity.id}`}
+              src={`/api/photo-log/file/${activity.id}?v=${new Date(activity.updatedAt).getTime()}`}
               className="w-full max-h-96 object-contain rounded-lg cursor-zoom-in"
               expandable
             />

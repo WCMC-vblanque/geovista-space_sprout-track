@@ -389,7 +389,7 @@ export default function PhotoForm({
               ) : activity ? (
                 <div className="space-y-2">
                   <PhotoThumbnail
-                    src={`/api/photo-log/file/${activity.id}`}
+                    src={`/api/photo-log/file/${activity.id}?v=${new Date(activity.updatedAt).getTime()}`}
                     alt={t('Photo preview')}
                     className="w-full max-h-80 object-contain rounded-lg border border-gray-200"
                   />

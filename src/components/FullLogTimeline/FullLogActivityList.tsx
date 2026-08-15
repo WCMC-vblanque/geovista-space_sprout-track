@@ -44,7 +44,7 @@ const FullLogActivityList: React.FC<FullLogActivityListProps> = ({
                   <div className={cn(styles.activityContent, "full-log-timeline-activity-content")}>
                     {'originalName' in activity ? (
                       <PhotoThumbnail
-                        src={`/api/photo-log/file/${activity.id}`}
+                        src={`/api/photo-log/file/${activity.id}?v=${new Date(activity.updatedAt).getTime()}`}
                         className={cn(styles.activityIcon, "object-cover rounded-lg full-log-timeline-activity-icon")}
                       />
                     ) : (
