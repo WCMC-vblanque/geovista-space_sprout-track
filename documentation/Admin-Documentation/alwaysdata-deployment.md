@@ -201,12 +201,36 @@ Then restart the site from the panel. (The repo's `scripts/deployment.sh` and
 
 ## Building locally and transferring the build (low-resource server)
 
-If the server doesn't have enough RAM/CPU for `npm run build`, you can build
-locally and ship `.next`, `node_modules`, `public`, `prisma`, `package.json`,
-and `package-lock.json` (e.g. as a single tar.gz, to avoid FTP choking on
-`node_modules`'s tens of thousands of files). **Never include a build's
-`prisma/schema.prisma` or generated Prisma Client without regenerating them
-against the server's own `.env` first.**
+If the server doesn't have enough RAM/CPU for `npm run build` (or the `Files`
+symlink panic in Troubleshooting keeps hitting), build locally and only ship
+`.next` — **not** `node_modules`. Everything else (`package.json`,
+`prisma/schema.prisma`, migrations) already reaches the server via `git pull`,
+and installing a couple of new/changed npm packages there is fast and cheap;
+it's only `next build` itself that's expensive. Shipping the full
+`node_modules` tree (500MB+, tens of thousands of files) is almost never
+actually needed — reserve it for the rare case where a native module
+(`sharp`, Prisma engines) needs an architecture the server's own `npm install`
+can't resolve on its own.
+
+**Before archiving, exclude `.next/dev` and `.next/cache`** — `.next/dev` is
+leftover `next dev` state if that same `.next` directory was ever used to run
+the dev server (can be 500MB+ on its own) and is irrelevant to `next start`;
+`.next/cache` only speeds up future local builds. Excluding both typically
+takes a several-hundred-MB `.next` down to ~10-20MB:
+
+```bash
+tar -czf sprout-track-next-build.tar.gz --exclude='.next/dev' --exclude='.next/cache' .next
+```
+
+On the server: `git pull`, `npm install --include=dev`, regenerate Prisma
+(below), then extract the archive on top of the site directory (it only
+touches `.next/`, nothing else) and restart.
+
+**Never include a build's `prisma/schema.prisma` or generated Prisma Client
+without regenerating them against the server's own `.env` first** — this
+doesn't apply when you only ship `.next` (schema comes from `git pull`), but
+still applies if you ever do ship a full `node_modules` per the fallback
+below.
 
 Why: `npm run prisma:generate` runs `prisma:prepare` (`scripts/prisma-provider.js`),
 which rewrites `schema.prisma`'s datasource block to match whatever
