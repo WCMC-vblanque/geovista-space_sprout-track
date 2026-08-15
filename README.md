@@ -50,6 +50,10 @@ Monthly reports with growth metrics, percentile curves, feeding stats, sleep ana
   <img src="public/readme/ReportCardPDF.png" width="500" alt="PDF Report Card" style="border-radius: 8px;" />
 </p>
 
+### Daily Photo
+
+Capture one photo a day to build a visual timeline of your baby's growth, plus a growth timelapse view that plays every daily photo back-to-back.
+
 ### Full Activity Log & Export
 
 Searchable, filterable activity log with pagination and data export to csv or xlsx.
