@@ -8,7 +8,7 @@ import { Input } from '@/src/components/ui/input';
 import { DateTimePicker } from '@/src/components/ui/date-time-picker';
 import { Checkbox } from '@/src/components/ui/checkbox';
 import { Label } from '@/src/components/ui/label';
-import { Camera, Image as ImageIcon, X, Droplet } from 'lucide-react';
+import { Camera, Image as ImageIcon, X } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
 import {
   Select,
@@ -28,6 +28,23 @@ import { handleExpirationError } from '@/src/lib/expiration-error-handler';
 import { useParams } from 'next/navigation';
 import { useLocalization } from '@/src/context/localization';
 import { PhotoThumbnail } from '@/src/components/ui/photo-thumbnail';
+
+// Smiling yellow droplet, matching the pile-of-poo emoji's cute-character
+// style for the "Pee Size" picker (no matching Unicode emoji exists for this).
+const PeeIcon: React.FC<{ style?: React.CSSProperties }> = ({ style }) => (
+  <svg viewBox="0 0 24 24" style={style} role="img" aria-hidden="true">
+    <path
+      d="M12 2C12 2 5 12 5 16.5C5 20.09 8.13 23 12 23C15.87 23 19 20.09 19 16.5C19 12 12 2 12 2Z"
+      fill="#FFCC33"
+      stroke="#E6A700"
+      strokeWidth="1"
+      strokeLinejoin="round"
+    />
+    <circle cx="9.7" cy="16" r="1" fill="#3E2723" />
+    <circle cx="14.3" cy="16" r="1" fill="#3E2723" />
+    <path d="M10 18.3C10.6 19.1 13.4 19.1 14 18.3" stroke="#3E2723" strokeWidth="1" strokeLinecap="round" fill="none" />
+  </svg>
+);
 
 // Icon size (px) and tap-target size (px) per DiaperSize tier, shared by
 // the pee and poo pickers so "small/medium/large" reads consistently.
@@ -391,11 +408,11 @@ export default function DiaperForm({
                       aria-label={t(value === 'SMALL' ? 'Small' : value === 'MEDIUM' ? 'Medium' : 'Large')}
                       className={cn(
                         "flex items-center justify-center rounded-full transition-colors",
-                        formData.pumpSize === value ? "bg-blue-100 ring-2 ring-blue-500" : "hover:bg-gray-100"
+                        formData.pumpSize === value ? "bg-yellow-100 ring-2 ring-yellow-400" : "hover:bg-gray-100"
                       )}
                       style={{ width: target, height: target }}
                     >
-                      <Droplet style={{ width: icon, height: icon }} className="text-blue-500" />
+                      <PeeIcon style={{ width: icon, height: icon }} />
                     </button>
                   ))}
                 </div>
