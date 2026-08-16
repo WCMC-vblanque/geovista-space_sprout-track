@@ -227,31 +227,60 @@ On the server: `git pull`, `npm install --include=dev`, regenerate Prisma
 touches `.next/`, nothing else) and restart.
 
 **Never include a build's `prisma/schema.prisma` or generated Prisma Client
-without regenerating them against the server's own `.env` first** — this
-doesn't apply when you only ship `.next` (schema comes from `git pull`), but
-still applies if you ever do ship a full `node_modules` per the fallback
-below.
+without regenerating them against the server's own `.env` first** — but see
+the Turbopack caveat directly below before regenerating anything *after*
+transferring a `.next`-only archive.
 
-Why: `npm run prisma:generate` runs `prisma:prepare` (`scripts/prisma-provider.js`),
-which rewrites `schema.prisma`'s datasource block to match whatever
+Why generate against the right provider at all: `npm run prisma:generate`
+runs `prisma:prepare` (`scripts/prisma-provider.js`), which rewrites
+`schema.prisma`'s datasource block to match whatever
 `DATABASE_PROVIDER`/`DATABASE_URL` is in the **currently sourced `.env`** at
-generate time. If you build locally against your local dev `.env` (typically
-SQLite) and ship that `schema.prisma` + client to a PostgreSQL server, the
-app starts without error but every database query fails at runtime
-(`Error validating datasource`: URL must start with `file:`) — easy to miss
-since there's no crash, just a broken site.
+generate time. Build locally against your local dev `.env` (typically
+SQLite) and the wrong provider ends up baked into whatever ships.
 
-**After transferring a locally-built archive, always regenerate on the server
-itself before restarting:**
+### ⚠️ Turbopack bakes a content hash of the Prisma Client into `.next` — do not regenerate it separately afterward
+
+This supersedes advice you may see elsewhere (including earlier versions of
+this doc) to "just re-run `prisma generate` on the server after transferring
+`.next`." **Don't.** Next 16's Turbopack build compiles a reference like
+`@prisma/client-<contenthash>` directly into the server chunks. That hash is
+derived from the exact generated Prisma Client present *at build time*. If
+you regenerate the client afterward — even against the identical schema and
+provider — the newly generated client gets a different hash, and the
+reference baked into `.next` can no longer resolve it. The site fails to
+start with `Cannot find module '@prisma/client-<hash>'` in the Alwaysdata
+upstream log, which looks like a missing-dependency problem but is actually
+a stale build artifact.
+
+**The fix: ship the generated Prisma Client together with `.next`, from the
+same local build pass, and never run `prisma generate` again after that
+build until the next rebuild.**
+
+```bash
+# Generate once, for the target provider, then build - in that order, don't
+# regenerate again after this until you rebuild .next from scratch.
+DATABASE_PROVIDER=postgresql npm run prisma:generate
+DATABASE_PROVIDER=postgresql npm run prisma:generate:log
+npm run build
+
+# Ship .next plus the exact client that was just generated (not the full
+# node_modules - these two dirs alone are ~60-70MB, not 500MB+):
+tar -czf sprout-track-next-build.tar.gz \
+  --exclude='.next/dev' --exclude='.next/cache' \
+  .next node_modules/@prisma/client node_modules/.prisma
+```
+
+On the server, extract on top of the site directory and restart — **do
+not** run `npm run prisma:generate` afterward:
 
 ```bash
 cd ~/www/sprout-track
-set -a; source .env; set +a
-npm run prisma:generate && npm run prisma:generate:log
+tar -xzf sprout-track-next-build.tar.gz
 ```
 
-This is lightweight (Prisma codegen only, not a full build) and safe to run
-even on constrained resources.
+If the schema or a migration changed, still run `npx prisma db push`
+against the database (that's a schema-sync operation, separate from
+client codegen, and safe) — just don't re-run `prisma generate`.
 
 ### Standalone output (much smaller transfer)
 
