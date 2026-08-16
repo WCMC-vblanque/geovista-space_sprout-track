@@ -264,8 +264,16 @@ DATABASE_PROVIDER=postgresql npm run prisma:generate:log
 npm run build
 
 # Ship .next plus the exact client that was just generated (not the full
-# node_modules - these two dirs alone are ~60-70MB, not 500MB+):
-tar -czf sprout-track-next-build.tar.gz \
+# node_modules - these two dirs alone are ~60-70MB, not 500MB+).
+# -h / --dereference is required: Turbopack vendors its own copy of the
+# client at .next/node_modules/@prisma/client-<hash> as a SYMLINK back to
+# node_modules/@prisma/client. A plain tar stores the symlink itself - a
+# relative path computed from wherever you built it - which resolves to
+# nothing once extracted into a different directory structure on the
+# server, crashing with "Cannot find module '@prisma/client-<hash>'"
+# even though the real files are sitting right there in node_modules.
+# -h follows the symlink and stores the real file contents instead.
+tar -czhf sprout-track-next-build.tar.gz \
   --exclude='.next/dev' --exclude='.next/cache' \
   .next node_modules/@prisma/client node_modules/.prisma
 ```
@@ -275,12 +283,37 @@ not** run `npm run prisma:generate` afterward:
 
 ```bash
 cd ~/www/sprout-track
+rm -rf .next node_modules/@prisma/client node_modules/.prisma
 tar -xzf sprout-track-next-build.tar.gz
 ```
 
 If the schema or a migration changed, still run `npx prisma db push`
 against the database (that's a schema-sync operation, separate from
 client codegen, and safe) — just don't re-run `prisma generate`.
+
+### ⚠️ Also declare `binaryTargets` for both OpenSSL ABIs if you build on WSL/Debian
+
+Prisma's query engine is a native binary tied to the build machine's
+OpenSSL version. Building locally on WSL Debian generates an engine for
+whatever OpenSSL that distro ships (commonly 3.0.x); Alwaysdata's servers
+have been observed running an older Debian base on 1.0.x. Shipping a
+client built for the wrong one fails at *query* time, not startup, with:
+
+```
+Prisma Client could not locate the Query Engine for runtime "debian-openssl-1.0.x".
+This happened because Prisma Client was generated for "debian-openssl-3.0.x", ...
+```
+
+Fix once, in both `prisma/schema.prisma` and `prisma/log-schema.prisma`,
+so every generate bundles both engine binaries (a few extra MB each, not
+worth troubleshooting around):
+
+```prisma
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-1.0.x", "debian-openssl-3.0.x"]
+}
+```
 
 ### Standalone output (much smaller transfer)
 
