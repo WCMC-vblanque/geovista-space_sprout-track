@@ -128,14 +128,14 @@ const FamilyPeopleTab: React.FC<FamilyPeopleTabProps> = ({
     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
     
     if (diffDays < 30) {
-      return `${diffDays} days old`;
+      return `${diffDays} ${t('days old')}`;
     } else if (diffDays < 365) {
       const months = Math.floor(diffDays / 30);
-      return `${months} month${months > 1 ? 's' : ''} old`;
+      return `${months} ${months > 1 ? t('months old') : t('month old')}`;
     } else {
       const years = Math.floor(diffDays / 365);
       const remainingMonths = Math.floor((diffDays % 365) / 30);
-      return `${years} year${years > 1 ? 's' : ''} ${remainingMonths > 0 ? `${remainingMonths} month${remainingMonths > 1 ? 's' : ''}` : ''} old`.trim();
+      return `${years} ${years > 1 ? t('years old') : t('year old')} ${remainingMonths > 0 ? `${remainingMonths} ${remainingMonths > 1 ? t('months') : t('month')}` : ''}`.trim();
     }
   };
 

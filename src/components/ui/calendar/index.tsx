@@ -474,7 +474,7 @@ const Calendar = React.forwardRef<HTMLDivElement, CalendarProps>(
                 calendarMonthSelectVariants({ variant }), 
                 "calendar-month-select px-2 py-1 rounded cursor-pointer"
               )}
-              aria-label="Select month"
+              aria-label={t('Select month')}
             >
               {month.toLocaleDateString('en-US', { month: 'long' })}
             </button>
@@ -486,7 +486,7 @@ const Calendar = React.forwardRef<HTMLDivElement, CalendarProps>(
                 calendarMonthSelectVariants({ variant }), 
                 "calendar-year-select px-2 py-1 rounded cursor-pointer"
               )}
-              aria-label="Select year"
+              aria-label={t('Select year')}
             >
               {month.getFullYear()}
             </button>

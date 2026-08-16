@@ -474,56 +474,56 @@ const StatsTab: React.FC<StatsTabProps> = ({
       ) : (
         <div className="grid grid-cols-2 gap-4 mt-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           <CardVisual
-            title="Avg Wake Window"
+            title={t('Avg Wake Window')}
             mainValue={formatMinutes(mainStats.avgWakeWindow)}
             comparativeValue={formatMinutes(compareStats.avgWakeWindow)}
             trend={mainStats.avgWakeWindow >= compareStats.avgWakeWindow ? 'positive' : 'negative'}
           />
           
           <CardVisual
-            title="Avg Nap Time"
+            title={t('Avg Nap Time')}
             mainValue={formatMinutes(mainStats.avgNapTime)}
             comparativeValue={formatMinutes(compareStats.avgNapTime)}
             trend={mainStats.avgNapTime >= compareStats.avgNapTime ? 'positive' : 'negative'}
           />
           
           <CardVisual
-            title="Avg Night Sleep"
+            title={t('Avg Night Sleep')}
             mainValue={formatMinutes(mainStats.avgNightSleepTime)}
             comparativeValue={formatMinutes(compareStats.avgNightSleepTime)}
             trend={mainStats.avgNightSleepTime >= compareStats.avgNightSleepTime ? 'positive' : 'negative'}
           />
           
           <CardVisual
-            title="Avg Night Wakings"
+            title={t('Avg Night Wakings')}
             mainValue={mainStats.avgNightWakings.toFixed(1)}
             comparativeValue={compareStats.avgNightWakings.toFixed(1)}
             trend={mainStats.avgNightWakings <= compareStats.avgNightWakings ? 'positive' : 'negative'}
           />
           
           <CardVisual
-            title="Avg Feedings"
+            title={t('Avg Feedings')}
             mainValue={mainStats.avgFeedings.toFixed(1)}
             comparativeValue={compareStats.avgFeedings.toFixed(1)}
             trend="neutral"
           />
           
           <CardVisual
-            title="Avg Feed Amount"
+            title={t('Avg Feed Amount')}
             mainValue={mainStats.avgFeedAmount.toFixed(1) + ' ' + mainStats.feedUnit}
             comparativeValue={compareStats.avgFeedAmount.toFixed(1) + ' ' + compareStats.feedUnit}
             trend={mainStats.avgFeedAmount >= compareStats.avgFeedAmount ? 'positive' : 'negative'}
           />
           
           <CardVisual
-            title="Avg Diaper Changes"
+            title={t('Avg Diaper Changes')}
             mainValue={mainStats.avgDiaperChanges.toFixed(1)}
             comparativeValue={compareStats.avgDiaperChanges.toFixed(1)}
             trend="neutral"
           />
           
           <CardVisual
-            title="Avg Poops"
+            title={t('Avg Poops')}
             mainValue={mainStats.avgPoops.toFixed(1)}
             comparativeValue={compareStats.avgPoops.toFixed(1)}
             trend="neutral"

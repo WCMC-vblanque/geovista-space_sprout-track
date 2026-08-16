@@ -579,7 +579,7 @@ const MedicineForm: React.FC<MedicineFormProps> = ({
                   value={formData.notes || ''}
                   onChange={handleChange}
                   className="w-full min-h-[100px] pl-9"
-                  placeholder="Enter additional notes about this medicine"
+                  placeholder={t('Enter additional notes about this medicine')}
                 />
                 <FileText className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
               </div>

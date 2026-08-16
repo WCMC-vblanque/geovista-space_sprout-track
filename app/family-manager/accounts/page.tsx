@@ -101,11 +101,11 @@ export default function AccountsPage() {
       if (data.success) {
         fetchAccounts();
       } else {
-        alert('Failed to update account: ' + data.error);
+        alert(t('Failed to update account') + ': ' + data.error);
       }
     } catch (error) {
       console.error('Error updating account:', error);
-      alert('Error updating account');
+      alert(t('Error updating account'));
     } finally {
       setUpdatingAccountId(null);
     }

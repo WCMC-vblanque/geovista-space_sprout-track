@@ -187,7 +187,7 @@ export function NurseryModeContainer() {
               const time = new Date(latest.endTime)
                 .toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })
                 .toLowerCase();
-              const dur = latest.duration ? `${latest.duration} min` : '';
+              const dur = latest.duration ? `${latest.duration} ${t('min')}` : '';
               newLogs.sleep = { last: time, note: [t(latest.location || 'Sleep'), dur].filter(Boolean).join(' — ') };
             }
           }

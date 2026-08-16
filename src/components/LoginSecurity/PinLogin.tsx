@@ -595,7 +595,7 @@ export default function PinLogin({
                   onChange={handleLoginIdChange}
                   onKeyDown={handleKeyDown}
                   className="text-center text-xl sr-only"
-                  placeholder="ID"
+                  placeholder={t('ID')}
                   maxLength={2}
                   inputMode="none"
                   readOnly
@@ -610,7 +610,7 @@ export default function PinLogin({
                   onChange={handlePinChange}
                   onKeyDown={handleKeyDown}
                   className="text-center text-xl font-semibold sr-only"
-                  placeholder="PIN"
+                  placeholder={t('PIN')}
                   maxLength={10}
                   inputMode="none"
                   readOnly
@@ -654,7 +654,7 @@ export default function PinLogin({
                   onChange={handlePinChange}
                   onKeyDown={handleKeyDown}
                   className="text-center text-xl font-semibold sr-only"
-                  placeholder="PIN"
+                  placeholder={t('PIN')}
                   maxLength={10}
                   inputMode="none"
                   readOnly

@@ -126,7 +126,7 @@ export default function BabyModal({
                   setFormData({ ...formData, firstName: e.target.value })
                 }
                 className="w-full"
-                placeholder="Enter first name"
+                placeholder={t('Enter first name')}
                 required
               />
             </div>
@@ -138,7 +138,7 @@ export default function BabyModal({
                   setFormData({ ...formData, lastName: e.target.value })
                 }
                 className="w-full"
-                placeholder="Enter last name"
+                placeholder={t('Enter last name')}
                 required
               />
             </div>
@@ -164,7 +164,7 @@ export default function BabyModal({
               }
             >
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select gender" />
+                <SelectValue placeholder={t('Select gender')} />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="MALE">{t('Male')}</SelectItem>

@@ -319,7 +319,7 @@ export default function MeasurementForm({
       // If we couldn't convert the date to a UTC string, show an error
       if (!utcDateString) {
         console.error('Failed to convert date to UTC string');
-        alert('Invalid date. Please try again.');
+        alert(t('Invalid date. Please try again.'));
         setLoading(false);
         return;
       }

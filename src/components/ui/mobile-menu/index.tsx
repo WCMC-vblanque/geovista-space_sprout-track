@@ -4,6 +4,7 @@ import * as React from "react"
 import { Menu } from 'lucide-react';
 import { cn } from "@/src/lib/utils"
 import { Button } from '../button';
+import { useLocalization } from '@/src/context/localization';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -38,6 +39,7 @@ import "./mobile-menu.css"
  */
 const MobileMenu = React.forwardRef<HTMLDivElement, MobileMenuProps>(
   ({ className, children, ...props }, ref) => {
+    const { t } = useLocalization();
     const [isOpen, setIsOpen] = React.useState(false);
 
     // Close menu on window resize to desktop size
@@ -69,7 +71,7 @@ const MobileMenu = React.forwardRef<HTMLDivElement, MobileMenuProps>(
                 variant="ghost"
                 size="sm"
                 className="mobile-menu-hamburger p-2"
-                aria-label="Toggle menu"
+                aria-label={t('Toggle menu')}
               >
                 <Menu size={20} />
               </Button>

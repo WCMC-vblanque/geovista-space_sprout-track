@@ -134,7 +134,7 @@ export default function SettingsModal({
       document.body.removeChild(a);
     } catch (error) {
       console.error('Backup error:', error);
-      alert('Failed to create backup');
+      alert(t('Failed to create backup'));
     }
   };
 
@@ -160,7 +160,7 @@ export default function SettingsModal({
       window.location.reload();
     } catch (error) {
       console.error('Restore error:', error);
-      alert('Failed to restore backup');
+      alert(t('Failed to restore backup'));
     } finally {
       setIsRestoring(false);
       if (fileInputRef.current) {
@@ -202,7 +202,7 @@ export default function SettingsModal({
                 disabled={loading}
                 value={settings?.familyName || ''}
                 onChange={(e) => handleSettingsChange({ familyName: e.target.value })}
-                placeholder="Enter family name"
+                placeholder={t('Enter family name')}
                 className="w-full"
               />
               </div>
@@ -264,7 +264,7 @@ export default function SettingsModal({
                       }}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select a baby" />
+                        <SelectValue placeholder={t('Select a baby')} />
                       </SelectTrigger>
                       <SelectContent>
                         {babies.map((baby) => (

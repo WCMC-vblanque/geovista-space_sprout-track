@@ -619,13 +619,13 @@ export const getActivityDetails = (activity: ActivityType, settings: Settings | 
       let ageString = '';
       
       if (years > 0) {
-        ageString += `${years} year${years !== 1 ? 's' : ''} `;
+        ageString += `${years} ${years !== 1 ? t('years') : t('year')} `;
       }
       if (months > 0) {
-        ageString += `${months} month${months !== 1 ? 's' : ''} `;
+        ageString += `${months} ${months !== 1 ? t('months') : t('month')} `;
       }
       if (days > 0 || (years === 0 && months === 0)) {
-        ageString += `${days} day${days !== 1 ? 's' : ''}`;
+        ageString += `${days} ${days !== 1 ? t('days') : t('day')}`;
       }
       
       milestoneDetails.push({ label: t('Age'), value: ageString.trim() });

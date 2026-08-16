@@ -193,9 +193,9 @@ const ShareButton = React.forwardRef<HTMLButtonElement, ShareButtonProps>(
         console.error('All copy methods failed:', error);
         // Final fallback - show the URL in an alert or prompt
         if (typeof prompt === 'function') {
-          prompt('Copy this URL:', shareUrl);
+          prompt(t('Copy this URL:'), shareUrl);
         } else {
-          alert(`Share this URL: ${shareUrl}`);
+          alert(`${t('Share this URL:')} ${shareUrl}`);
         }
       }
     };

@@ -282,7 +282,7 @@ export default function SleepModal({
                 disabled={isSleeping && !isEditMode} // Only disabled when ending sleep and not editing
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select type" />
+                  <SelectValue placeholder={t('Select type')} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="NAP">{t('Nap')}</SelectItem>
@@ -300,7 +300,7 @@ export default function SleepModal({
                 disabled={isSleeping && !isEditMode} // Only disabled when ending sleep and not editing
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select location" />
+                  <SelectValue placeholder={t('Select location')} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Crib">{t('Crib')}</SelectItem>
@@ -322,7 +322,7 @@ export default function SleepModal({
                 }
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="How well did they sleep?" />
+                  <SelectValue placeholder={t('How well did they sleep?')} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="POOR">{t('Poor')}</SelectItem>

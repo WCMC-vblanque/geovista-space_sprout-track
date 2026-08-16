@@ -227,7 +227,7 @@ export default function FeedModal({
                 }
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select type" />
+                  <SelectValue placeholder={t('Select type')} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="BREAST">{t('Breast')}</SelectItem>
@@ -248,7 +248,7 @@ export default function FeedModal({
                 }
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select side" />
+                  <SelectValue placeholder={t('Select side')} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="LEFT">{t('Left')}</SelectItem>
@@ -303,7 +303,7 @@ export default function FeedModal({
                 }
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select food" />
+                  <SelectValue placeholder={t('Select food')} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="BANANA">{t('Banana')}</SelectItem>

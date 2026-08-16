@@ -33,8 +33,8 @@ export function AdminPasswordResetModal({
     <Modal
       open={open}
       onOpenChange={onOpenChange}
-      title="Admin Password Reset"
-      description="Important security notice about your Family Manager password"
+      title={t('Admin Password Reset')}
+      description={t('Important security notice about your Family Manager password')}
     >
       <ModalContent>
         <div className="space-y-4">

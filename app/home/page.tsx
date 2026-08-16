@@ -210,7 +210,7 @@ const home = () => {
       }, 10000);
     } catch (error) {
       console.error('Error submitting signup:', error);
-      alert('There was an error signing up. Please try again.');
+      alert(t('There was an error signing up. Please try again.'));
     } finally {
       setIsSubmitting(false);
     }

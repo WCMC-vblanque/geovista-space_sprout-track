@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { cn } from '@/src/lib/utils';
 import { formPageStyles, tabStyles } from './form-page.styles';
 import { useTheme } from '@/src/context/theme';
+import { useLocalization } from '@/src/context/localization';
 import './form-page.css';
 import { 
   FormPageProps, 
@@ -171,7 +172,8 @@ export function FormPage({
   className,
 }: FormPageProps) {
   const { theme } = useTheme();
-  
+  const { t } = useLocalization();
+
   // State to track if we're in a browser environment
   const [mounted, setMounted] = useState(false);
   
@@ -253,7 +255,7 @@ export function FormPage({
         )}
         role="dialog"
         aria-modal="true"
-        aria-label="Form page"
+        aria-label={t('Form page')}
         style={{ isolation: 'isolate' }} // Create a new stacking context
       >
         <FormPageHeader

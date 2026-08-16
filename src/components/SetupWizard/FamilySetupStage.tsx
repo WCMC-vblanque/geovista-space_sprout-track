@@ -178,7 +178,7 @@ const FamilySetupStage: React.FC<FamilySetupStageProps> = ({
           id="familyName"
           value={familyName}
           onChange={(e) => setFamilyName(e.target.value)}
-          placeholder="Enter family name"
+          placeholder={t('Enter family name')}
           className={cn(styles.formInput, "setup-wizard-form-input")}
         />
       </div>
@@ -212,7 +212,7 @@ const FamilySetupStage: React.FC<FamilySetupStageProps> = ({
               onClick={generateSlug}
               disabled={generatingSlug}
               className="px-3"
-              title="Generate random URL"
+              title={t('Generate random URL')}
             >
               {generatingSlug ? (
                 <Loader2 className="h-4 w-4 animate-spin" />

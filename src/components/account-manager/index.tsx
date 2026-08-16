@@ -215,8 +215,8 @@ const AccountManager: React.FC<AccountManagerProps> = ({
     <FormPage
       isOpen={isOpen}
       onClose={onClose}
-      title="Account Manager"
-      description="Manage your account settings and family information"
+      title={t('Account Manager')}
+      description={t('Manage your account settings and family information')}
       tabs={tabs}
       defaultActiveTab="account-settings"
     >

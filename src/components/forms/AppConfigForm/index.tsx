@@ -674,7 +674,7 @@ export default function AppConfigForm({
                                   setError(null);
                                   setSuccess(null);
                                 }}
-                                placeholder="Confirm new password"
+                                placeholder={t('Confirm new password')}
                                 autoComplete="new-password"
                               />
                               <Button 
@@ -825,7 +825,7 @@ export default function AppConfigForm({
                         name="smtp2goApiKey"
                         value={emailFormData.smtp2goApiKey}
                         onChange={handleEmailInputChange}
-                        placeholder="Enter SMTP2GO API Key"
+                        placeholder={t('Enter SMTP2GO API Key')}
                       />
                     </div>
                   )}

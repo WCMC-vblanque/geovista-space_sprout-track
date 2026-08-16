@@ -180,7 +180,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 
   // Handle subscription cancellation
   const handleCancelSubscription = async () => {
-    if (!confirm('Are you sure you want to cancel your subscription? You will still have access until the end of your current billing period.')) {
+    if (!confirm(t('Are you sure you want to cancel your subscription? You will still have access until the end of your current billing period.'))) {
       return;
     }
 

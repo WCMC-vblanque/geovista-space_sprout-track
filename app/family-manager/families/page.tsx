@@ -177,7 +177,7 @@ export default function FamiliesPage() {
 
   const saveFamily = async (family: FamilyData) => {
     if (slugError) {
-      alert('Please fix the slug error before saving');
+      alert(t('Please fix the slug error before saving'));
       return;
     }
     try {
@@ -199,11 +199,11 @@ export default function FamiliesPage() {
         setEditingData({});
         setSlugError('');
       } else {
-        alert('Failed to save changes: ' + data.error);
+        alert(t('Failed to save changes') + ': ' + data.error);
       }
     } catch (error) {
       console.error('Error saving family:', error);
-      alert('Error saving changes');
+      alert(t('Error saving changes'));
     } finally {
       setSaving(false);
     }

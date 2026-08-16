@@ -196,7 +196,7 @@ export default function CaretakerModal({
                 setFormData({ ...formData, loginId: value });
               }}
               className="w-full"
-              placeholder="Enter 2-digit login ID"
+              placeholder={t('Enter 2-digit login ID')}
               maxLength={2}
               required
               autoComplete="off"
@@ -213,7 +213,7 @@ export default function CaretakerModal({
                 setFormData({ ...formData, name: e.target.value })
               }
               className="w-full"
-              placeholder="Enter caretaker name"
+              placeholder={t('Enter caretaker name')}
               required
             />
           </div>
@@ -225,7 +225,7 @@ export default function CaretakerModal({
                 setFormData({ ...formData, type: e.target.value })
               }
               className="w-full"
-              placeholder="Parent, Grandparent, Nanny, etc."
+              placeholder={t('Parent, Grandparent, Nanny, etc.')}
             />
           </div>
           <div>
@@ -238,7 +238,7 @@ export default function CaretakerModal({
               disabled={isFirstCaretaker}
             >
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select a role" />
+                <SelectValue placeholder={t('Select a role')} />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="USER">{t('Regular User')}</SelectItem>
@@ -267,7 +267,7 @@ export default function CaretakerModal({
                 }
               }}
               className="w-full"
-              placeholder="Enter 6-10 digit PIN"
+              placeholder={t('Enter 6-10 digit PIN')}
               minLength={6}
               maxLength={10}
               pattern="\d*"
@@ -287,7 +287,7 @@ export default function CaretakerModal({
                 }
               }}
               className="w-full"
-              placeholder="Confirm PIN"
+              placeholder={t('Confirm PIN')}
               minLength={6}
               maxLength={10}
               pattern="\d*"

@@ -98,11 +98,11 @@ export default function InvitesPage() {
       if (data.success) {
         await fetchInvites();
       } else {
-        alert('Failed to delete invite: ' + data.error);
+        alert(t('Failed to delete invite') + ': ' + data.error);
       }
     } catch (error) {
       console.error('Error deleting invite:', error);
-      alert('Error deleting invite');
+      alert(t('Error deleting invite'));
     } finally {
       setDeletingInviteId(null);
     }

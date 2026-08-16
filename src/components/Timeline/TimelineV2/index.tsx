@@ -20,8 +20,10 @@ import TimelineActivityDetails from '../TimelineActivityDetails';
 import { getActivityEndpoint, getActivityTime } from '../utils';
 import { SleepLogResponse, FeedLogResponse, DiaperLogResponse, PumpLogResponse, BreastMilkAdjustmentResponse, PlayLogResponse, VaccineLogResponse } from '@/app/api/types';
 import { useActivityCache } from './useActivityCache';
+import { useLocalization } from '@/src/context/localization';
 
 const TimelineV2 = ({ babyId, refreshTrigger, onLatestStatusReady, onActivityDeleted }: TimelineProps) => {
+  const { t } = useLocalization();
   const [settings, setSettings] = useState<Settings | null>(null);
   const [selectedActivity, setSelectedActivity] = useState<ActivityType | null>(null);
   const [activeFilter, setActiveFilter] = useState<FilterType>(null);
@@ -390,7 +392,7 @@ const TimelineV2 = ({ babyId, refreshTrigger, onLatestStatusReady, onActivityDel
   }, [dateFilteredActivities, activeFilter, breastMilkTrackingEnabled]);
 
   const handleDelete = async (activity: ActivityType) => {
-    if (!confirm('Are you sure you want to delete this activity?')) return;
+    if (!confirm(t('Are you sure you want to delete this activity?'))) return;
 
     const endpoint = getActivityEndpoint(activity);
     try {

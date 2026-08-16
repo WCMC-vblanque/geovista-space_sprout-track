@@ -527,7 +527,7 @@ export const BabyQuickStats: React.FC<BabyQuickStatsProps> = ({
                   />
                   
                   <CardVisual
-                    title="Avg Night Sleep"
+                    title={t("Avg Night Sleep")}
                     mainValue={formatMinutes(mainStats.avgNightSleepTime)}
                     comparativeValue={formatMinutes(compareStats.avgNightSleepTime)}
                     trend={mainStats.avgNightSleepTime >= compareStats.avgNightSleepTime ? 'positive' : 'negative'}
@@ -555,7 +555,7 @@ export const BabyQuickStats: React.FC<BabyQuickStatsProps> = ({
                   />
                   
                   <CardVisual
-                    title="Avg Diaper Changes"
+                    title={t("Avg Diaper Changes")}
                     mainValue={mainStats.avgDiaperChanges.toFixed(1)}
                     comparativeValue={compareStats.avgDiaperChanges.toFixed(1)}
                     trend="neutral"

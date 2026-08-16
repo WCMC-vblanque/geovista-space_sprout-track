@@ -896,14 +896,14 @@ const GrowthChart: React.FC<GrowthChartProps> = ({ className }) => {
           <button
             onClick={handleZoomIn}
             className={cn(growthChartStyles.zoomButton, "growth-chart-zoom-button")}
-            title="Zoom in"
+            title={t('Zoom in')}
           >
             <ZoomIn className="h-4 w-4" />
           </button>
           <button
             onClick={handleZoomOut}
             className={cn(growthChartStyles.zoomButton, "growth-chart-zoom-button")}
-            title="Zoom out"
+            title={t('Zoom out')}
             disabled={zoomLevel <= 1}
           >
             <ZoomOut className="h-4 w-4" />
@@ -911,7 +911,7 @@ const GrowthChart: React.FC<GrowthChartProps> = ({ className }) => {
           <button
             onClick={handleReset}
             className={cn(growthChartStyles.zoomButton, "growth-chart-zoom-button")}
-            title="Reset zoom"
+            title={t('Reset zoom')}
             disabled={zoomLevel === 1 && panOffset.x === 0 && panOffset.y === 0}
           >
             <RotateCcw className="h-4 w-4" />

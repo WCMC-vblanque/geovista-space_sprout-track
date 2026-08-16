@@ -261,7 +261,7 @@ export default function NoteModal({
                       setShowDropdown(true);
                     }}
                     className="w-full"
-                    placeholder="Type or select a category"
+                    placeholder={t('Type or select a category')}
                     onKeyDown={(e) => {
                       const visible = categories.filter(c => c.toLowerCase().includes(formData.category.toLowerCase()));
                       if (e.key === 'ArrowDown') { e.preventDefault(); setSelectedIndex(prev => Math.min(prev + 1, visible.length - 1)); }
@@ -293,7 +293,7 @@ export default function NoteModal({
                 value={formData.content}
                 onChange={(e) => setFormData({ ...formData, content: e.target.value })}
                 className="w-full min-h-[100px] resize-none"
-                placeholder="Enter your note here..."
+                placeholder={t('Enter your note here...')}
                 required
               />
             </div>

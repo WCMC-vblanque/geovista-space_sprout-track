@@ -103,19 +103,19 @@ const MilestonesTab: React.FC<MilestonesTabProps> = () => {
 
   // Format age label
   const formatAgeLabel = (months: number): string => {
-    if (months === 0) return 'Newborn (0 months)';
-    if (months === 1) return '1 month';
-    if (months < 12) return `${months} months`;
+    if (months === 0) return t('Newborn (0 months)');
+    if (months === 1) return `1 ${t('month')}`;
+    if (months < 12) return `${months} ${t('months')}`;
 
     const years = Math.floor(months / 12);
     const remainingMonths = months % 12;
 
     if (remainingMonths === 0) {
-      return years === 1 ? '1 year' : `${years} years`;
+      return years === 1 ? `1 ${t('year')}` : `${years} ${t('years')}`;
     }
 
-    const yearPart = years === 1 ? '1 year' : `${years} years`;
-    const monthPart = remainingMonths === 1 ? '1 month' : `${remainingMonths} months`;
+    const yearPart = years === 1 ? `1 ${t('year')}` : `${years} ${t('years')}`;
+    const monthPart = remainingMonths === 1 ? `1 ${t('month')}` : `${remainingMonths} ${t('months')}`;
 
     return `${yearPart}, ${monthPart}`;
   };

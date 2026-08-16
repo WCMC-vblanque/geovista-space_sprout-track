@@ -20,8 +20,10 @@ import TimelineActivityList from './TimelineActivityList';
 import TimelineActivityDetails from './TimelineActivityDetails';
 import { getActivityEndpoint, getActivityTime } from './utils';
 import { PumpLogResponse, BreastMilkAdjustmentResponse, PlayLogResponse, VaccineLogResponse } from '@/app/api/types';
+import { useLocalization } from '@/src/context/localization';
 
 const Timeline = ({ activities, onActivityDeleted }: LegacyTimelineProps) => {
+  const { t } = useLocalization();
   const [settings, setSettings] = useState<Settings | null>(null);
   const [selectedActivity, setSelectedActivity] = useState<ActivityType | null>(null);
   const [activeFilter, setActiveFilter] = useState<FilterType>(null);
@@ -274,7 +276,7 @@ const Timeline = ({ activities, onActivityDeleted }: LegacyTimelineProps) => {
   const handleDelete = async (activity: ActivityType) => {
     // Note: confirm dialog is browser-native and cannot be localized easily
     // Consider replacing with a custom modal in the future
-    if (!confirm('Are you sure you want to delete this activity?')) return;
+    if (!confirm(t('Are you sure you want to delete this activity?'))) return;
 
     const endpoint = getActivityEndpoint(activity);
     try {

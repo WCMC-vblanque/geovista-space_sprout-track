@@ -88,7 +88,7 @@ export const AdminSideNav: React.FC<AdminSideNavProps> = ({
         )}
         role={nonModal ? "navigation" : "dialog"}
         aria-modal={nonModal ? "false" : "true"}
-        aria-label="Admin navigation"
+        aria-label={t('Admin navigation')}
       >
         {/* Header */}
         <header className="w-full bg-white sticky top-0 z-40 admin-side-nav-header pt-[env(safe-area-inset-top)]">
@@ -97,7 +97,7 @@ export const AdminSideNav: React.FC<AdminSideNavProps> = ({
               <div className="flex items-center gap-3 flex-1">
                 <Image
                   src="/sprout-128.png"
-                  alt="Sprout Logo"
+                  alt={t('Sprout Logo')}
                   width={40}
                   height={40}
                   className={adminSideNavStyles.logo}
@@ -114,7 +114,7 @@ export const AdminSideNav: React.FC<AdminSideNavProps> = ({
                 <button
                   onClick={onClose}
                   className={cn(adminSideNavStyles.closeButton, "admin-side-nav-close-button")}
-                  aria-label="Close navigation"
+                  aria-label={t('Close navigation')}
                 >
                   <X size={20} />
                 </button>

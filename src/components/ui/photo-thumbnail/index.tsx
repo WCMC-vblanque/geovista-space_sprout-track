@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { Camera, X } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
+import { useLocalization } from '@/src/context/localization';
 
 interface PhotoThumbnailProps {
   /** Authenticated file-serving endpoint to fetch the image from, e.g. `/api/diaper-log/file/{id}` */
@@ -20,6 +21,7 @@ interface PhotoThumbnailProps {
  * an object URL. Used anywhere an activity log needs a visual thumbnail.
  */
 export function PhotoThumbnail({ src, className, alt, expandable = false }: PhotoThumbnailProps) {
+  const { t } = useLocalization();
   const [objectUrl, setObjectUrl] = useState<string | null>(null);
   const [failed, setFailed] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -92,7 +94,7 @@ export function PhotoThumbnail({ src, className, alt, expandable = false }: Phot
             type="button"
             className="absolute top-4 right-4 text-white/80 hover:text-white"
             onClick={() => setIsExpanded(false)}
-            aria-label="Close"
+            aria-label={t('Close')}
           >
             <X className="h-8 w-8" />
           </button>

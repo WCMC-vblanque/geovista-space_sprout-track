@@ -261,13 +261,13 @@ const GrowthSummarySection: React.FC<GrowthSummarySectionProps & { isPdfExport?:
       {isPdfExport ? (
         <>
           {growth.chartData.weight.points.length > 0 && (
-            <GrowthChartCard chartData={growth.chartData.weight} title="Weight-for-age (CDC)" babyName={babyName} disableAnimation />
+            <GrowthChartCard chartData={growth.chartData.weight} title={t('Weight-for-age (CDC)')} babyName={babyName} disableAnimation />
           )}
           {growth.chartData.length.points.length > 0 && (
-            <GrowthChartCard chartData={growth.chartData.length} title="Length-for-age (CDC)" babyName={babyName} disableAnimation />
+            <GrowthChartCard chartData={growth.chartData.length} title={t('Length-for-age (CDC)')} babyName={babyName} disableAnimation />
           )}
           {growth.chartData.headCircumference.points.length > 0 && (
-            <GrowthChartCard chartData={growth.chartData.headCircumference} title="Head circ.-for-age (CDC)" babyName={babyName} disableAnimation />
+            <GrowthChartCard chartData={growth.chartData.headCircumference} title={t('Head circ.-for-age (CDC)')} babyName={babyName} disableAnimation />
           )}
         </>
       ) : (

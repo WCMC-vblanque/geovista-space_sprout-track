@@ -3,6 +3,7 @@ import { cn } from "@/src/lib/utils";
 import { timeInputStyles } from "../time-input/time-input.styles";
 import { TimeInputProps } from "../time-input/time-input.types";
 import { useTheme } from "@/src/context/theme";
+import { useLocalization } from "@/src/context/localization";
 import { AlertCircle, Check } from "lucide-react";
 import "../time-input/time-input.css";
 
@@ -13,6 +14,7 @@ import "../time-input/time-input.css";
 const ExtendedTimeInput = React.forwardRef<HTMLInputElement, TimeInputProps>(
   ({ className, value, onChange, onBlur, errorMessage, showValidation = true, ...props }, ref) => {
     const { theme } = useTheme();
+    const { t } = useLocalization();
     const [isValid, setIsValid] = React.useState(true);
     const [internalValue, setInternalValue] = React.useState<string>(value as string || "");
     
@@ -142,7 +144,7 @@ const ExtendedTimeInput = React.forwardRef<HTMLInputElement, TimeInputProps>(
             value={internalValue}
             onChange={handleChange}
             onBlur={handleBlur}
-            placeholder="DD:HH:MM (e.g., 01:06:00)"
+            placeholder={t('DD:HH:MM (e.g., 01:06:00)')}
             maxLength={8}
             ref={ref}
             {...props}

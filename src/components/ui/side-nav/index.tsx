@@ -334,7 +334,7 @@ export const SideNav: React.FC<SideNavProps> = ({
         )}
         role={nonModal ? "navigation" : "dialog"}
         aria-modal={nonModal ? "false" : "true"}
-        aria-label="Main navigation"
+        aria-label={t('Main navigation')}
       >
         {/* Header - matching the structure of the green bar in the main layout */}
         <header className="w-full bg-white sticky top-0 z-40 side-nav-header pt-[env(safe-area-inset-top)]">
@@ -345,7 +345,7 @@ export const SideNav: React.FC<SideNavProps> = ({
                 <div className="flex items-center">
                   <Image
                     src="/sprout-128.png"
-                    alt="Sprout Logo"
+                    alt={t('Sprout Logo')}
                     width={40}
                     height={40}
                     className={sideNavStyles.logo}
@@ -361,7 +361,7 @@ export const SideNav: React.FC<SideNavProps> = ({
                         window.location.href = '/';
                       }}
                       className="text-left cursor-pointer hover:opacity-80 transition-opacity"
-                      aria-label="Go to home page"
+                      aria-label={t('Go to home page')}
                     >
                       <span className={cn(sideNavStyles.appName, "side-nav-app-name")}>{t('Sprout Track')}</span>
                     </button>
@@ -395,7 +395,7 @@ export const SideNav: React.FC<SideNavProps> = ({
                 <button
                   onClick={onClose}
                   className={cn(sideNavStyles.closeButton, "side-nav-close-button")}
-                  aria-label="Close navigation"
+                  aria-label={t('Close navigation')}
                 >
                   <X size={20} />
                 </button>
@@ -458,7 +458,7 @@ export const SideNav: React.FC<SideNavProps> = ({
               <span
                 className="text-xs text-gray-500 cursor-pointer hover:text-teal-600 transition-colors"
                 onClick={() => setShowChangelog(true)}
-                aria-label="View changelog"
+                aria-label={t('View changelog')}
               >
                 v{packageInfo.version}
               </span>

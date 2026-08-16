@@ -149,7 +149,7 @@ export default function ChangePinModal({
                     setError('');
                   }
                 }}
-                placeholder="Enter current PIN"
+                placeholder={t('Enter current PIN')}
                 pattern="\d*"
                 disabled={hasCaretakers || loading}
               />
@@ -171,7 +171,7 @@ export default function ChangePinModal({
                     }
                   }
                 }}
-                placeholder="Enter new PIN"
+                placeholder={t('Enter new PIN')}
                 minLength={6}
                 maxLength={10}
                 pattern="\d*"
@@ -196,7 +196,7 @@ export default function ChangePinModal({
                     }
                   }
                 }}
-                placeholder="Confirm new PIN"
+                placeholder={t('Confirm new PIN')}
                 minLength={6}
                 maxLength={10}
                 pattern="\d*"

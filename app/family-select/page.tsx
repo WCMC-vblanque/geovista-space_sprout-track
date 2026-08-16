@@ -268,7 +268,7 @@ export default function FamilySelectPage() {
                       onFocus={handleSearchFocus}
                       onKeyDown={handleKeyDown}
                       className="w-full pl-10 pr-10 family-select-input"
-                      placeholder="Search for your family..."
+                      placeholder={t('Search for your family...')}
                       disabled={loading}
                     />
                     <ChevronDown 

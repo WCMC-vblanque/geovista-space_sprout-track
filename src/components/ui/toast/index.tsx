@@ -3,6 +3,7 @@
 import * as React from "react"
 import { cn } from "@/src/lib/utils"
 import { useTheme } from "@/src/context/theme"
+import { useLocalization } from "@/src/context/localization"
 
 import { toastVariants, toastIconVariants, toastCloseButtonVariants } from "./toast.styles"
 import { ToastProps, ToastVariant } from "./toast.types"
@@ -134,6 +135,7 @@ const Toast = React.forwardRef<HTMLDivElement, ToastProps>(
     ref
   ) => {
     const { theme } = useTheme()
+    const { t } = useLocalization()
     const [isVisible, setIsVisible] = React.useState(true)
     const timeoutRef = React.useRef<NodeJS.Timeout | null>(null)
 
@@ -216,7 +218,7 @@ const Toast = React.forwardRef<HTMLDivElement, ToastProps>(
           <button
             onClick={handleDismiss}
             className={cn(toastCloseButtonVariants({ variant }))}
-            aria-label="Dismiss toast"
+            aria-label={t('Dismiss toast')}
           >
             <CloseIcon />
           </button>

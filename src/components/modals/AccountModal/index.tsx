@@ -764,7 +764,7 @@ export default function AccountModal({
                           setFormData({ ...formData, password: newPassword });
                           updatePasswordValidation(newPassword);
                         }}
-                        placeholder="Enter new password"
+                        placeholder={t('Enter new password')}
                         className="w-full"
                         required
                         disabled={isSubmitting}
@@ -778,7 +778,7 @@ export default function AccountModal({
                         type="password"
                         value={formData.confirmPassword}
                         onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                        placeholder="Confirm new password"
+                        placeholder={t('Confirm new password')}
                         className="w-full"
                         required
                         disabled={isSubmitting}
@@ -932,7 +932,7 @@ export default function AccountModal({
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  placeholder="Enter your email"
+                  placeholder={t('Enter your email')}
                   className="w-full"
                   required
                   disabled={isSubmitting}
@@ -953,7 +953,7 @@ export default function AccountModal({
                         updatePasswordValidation(newPassword);
                       }
                     }}
-                    placeholder="Enter your password"
+                    placeholder={t('Enter your password')}
                     className="w-full"
                     required
                     disabled={isSubmitting}
@@ -1008,7 +1008,7 @@ export default function AccountModal({
                         type="text"
                         value={formData.firstName}
                         onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                        placeholder="First name"
+                        placeholder={t('First name')}
                         className="w-full"
                         required
                         disabled={isSubmitting}
@@ -1020,7 +1020,7 @@ export default function AccountModal({
                         type="text"
                         value={formData.lastName}
                         onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                        placeholder="Last name"
+                        placeholder={t('Last name')}
                         className="w-full"
                         disabled={isSubmitting}
                       />

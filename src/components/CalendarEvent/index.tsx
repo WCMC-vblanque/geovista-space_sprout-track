@@ -53,73 +53,73 @@ const CalendarEvent: React.FC<CalendarEventProps> = ({
     if (event.allDay) {
       return formatDate(dateString);
     }
-    return `${formatDate(dateString)} at ${formatTime(dateString)}`;
+    return `${formatDate(dateString)} ${t('at')} ${formatTime(dateString)}`;
   };
-  
+
   // Get recurrence pattern text
   const getRecurrenceText = () => {
     if (!event.recurring || !event.recurrencePattern) {
       return null;
     }
-    
+
     let text = '';
     switch (event.recurrencePattern) {
       case 'DAILY':
-        text = 'Daily';
+        text = t('Daily');
         break;
       case 'WEEKLY':
-        text = 'Weekly';
+        text = t('Weekly');
         break;
       case 'BIWEEKLY':
-        text = 'Every 2 weeks';
+        text = t('Every 2 weeks');
         break;
       case 'MONTHLY':
-        text = 'Monthly';
+        text = t('Monthly');
         break;
       case 'YEARLY':
-        text = 'Yearly';
+        text = t('Yearly');
         break;
       case 'CUSTOM':
-        text = event.customRecurrence || 'Custom';
+        text = event.customRecurrence || t('Custom');
         break;
       default:
-        text = 'Recurring';
+        text = t('Recurring');
     }
-    
+
     if (event.recurrenceEnd) {
-      text += ` until ${formatDate(event.recurrenceEnd)}`;
+      text += ` ${t('until')} ${formatDate(event.recurrenceEnd)}`;
     }
-    
+
     return text;
   };
-  
+
   // Get reminder text
   const getReminderText = () => {
     if (event.reminderTime === null) {
       return null;
     }
-    
+
     if (event.reminderTime === 0) {
-      return 'At time of event';
+      return t('At time of event');
     }
-    
+
     if (event.reminderTime < 60) {
-      return `${event.reminderTime} minutes before`;
+      return `${event.reminderTime} ${t('minutes before')}`;
     }
-    
+
     if (event.reminderTime === 60) {
-      return '1 hour before';
+      return t('1 hour before');
     }
-    
+
     if (event.reminderTime < 1440) {
-      return `${event.reminderTime / 60} hours before`;
+      return `${event.reminderTime / 60} ${t('hours before')}`;
     }
-    
+
     if (event.reminderTime === 1440) {
-      return '1 day before';
+      return t('1 day before');
     }
-    
-    return `${event.reminderTime / 1440} days before`;
+
+    return `${event.reminderTime / 1440} ${t('days before')}`;
   };
   
   // Handle click
